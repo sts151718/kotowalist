@@ -34,7 +34,7 @@ jobs:
           cache: 'npm'
       - name: Setup Firebase secrets
         run: |
-          echo ${{secrets.FIREBASE_KEY}} | base64 --decode >> ${{ github.workspace }}/firebase-key.json
+          echo "${{secrets.FIREBASE_KEY}}" | base64 -d > ${{ github.workspace }}/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
       - name: Select Firebase Project
         run: npx firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
