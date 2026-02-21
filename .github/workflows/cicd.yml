@@ -1,0 +1,46 @@
+name: Run CI/CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 'main'
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+      - name: Setup Nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Test
+        run: make test
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+      - name: Setup Nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+          cache: 'npm'
+      - name: Setup Firebase secrets
+        run: |
+          echo ${{secrets.FIREBASE_KEY}} | base64 --decode >> ${{ github.workspace }}/firebase-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
+      - name: Select Firebase Project
+        run: npx firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
+      - name: Deploy Project
+        run: make deploy
+      - name: cleanUp Secrets Key
+        run: |
+          rm $GOOGLE_APPLICATION_CREDENTIALS
+        if: always()

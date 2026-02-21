@@ -1,6 +1,6 @@
 deploy:
 	npm run build
-	firebase deploy
+	npx firebase deploy
 
 test:
 	npm run test
