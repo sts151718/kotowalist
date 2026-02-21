@@ -32,6 +32,10 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
           cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Install firebase-tools
+        run: npm i -D firebase-tools
       - name: Setup Firebase secrets
         run: |
           echo "${{secrets.FIREBASE_KEY}}" | base64 -d > ${{ github.workspace }}/firebase-key.json
