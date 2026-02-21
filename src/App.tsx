@@ -3,7 +3,7 @@ import { Button } from '@chakra-ui/react';
 function App() {
   return (
     <>
-      <Button>ボタン</Button>
+      <Button colorPalette="teal">ボタン</Button>
     </>
   );
 }
