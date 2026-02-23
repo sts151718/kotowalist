@@ -10,7 +10,7 @@ export const MainLayout: FC = () => {
           <Link to="/">断リスト</Link>
         </Heading>
       </Flex>
-      <Box as="main">
+      <Box as="main" role="main">
         <Outlet />
       </Box>
     </>
