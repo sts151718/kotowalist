@@ -7,5 +7,5 @@ type Props = {
 
 export const MainContainer: FC<Props> = (props) => {
   const { children } = props;
-  return <Container>{children}</Container>;
+  return <Container py={6}>{children}</Container>;
 };
