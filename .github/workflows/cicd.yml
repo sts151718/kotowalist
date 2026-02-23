@@ -45,6 +45,9 @@ jobs:
         run: npx firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
       - name: Deploy Project
         run: make deploy
+        env:
+          VITE_SUPABASE_URL: ${{secrets.VITE_SUPABASE_URL}}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{secrets.VITE_SUPABASE_PUBLISHABLE_KEY}}
       - name: cleanUp Secrets Key
         run: |
           rm $GOOGLE_APPLICATION_CREDENTIALS
