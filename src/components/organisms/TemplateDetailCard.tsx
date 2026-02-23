@@ -1,5 +1,5 @@
 import type { DeclincePost } from '@/domain/DeclinePost';
-import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import { Box, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import { memo, type FC } from 'react';
 import { FaRegCalendar, FaRegUser } from 'react-icons/fa';
 import { IconText } from '@/components/molecules/IconText';
@@ -18,7 +18,7 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
   return (
     <TemplateDetailLayout
       header={
-        <>
+        <VStack alignItems="left">
           <Heading as="h2" size="xl">
             {post.declineSituation}
           </Heading>
@@ -26,7 +26,8 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
             <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.500" />
             <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.500" />
           </HStack>
-        </>
+          {post.hasDoneTemplate() && <StatusTag type="done" />}
+        </VStack>
       }
     >
       {post.actualSituation === null || (
@@ -72,7 +73,6 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
               data-testid={`template-detail-template${index + 1}`}
             >
               <Box>
-                {template.doneFlag && <StatusTag type="done" />}
                 <Heading as="dt" size="sm" mb={2}>
                   テンプレート{index + 1}
                 </Heading>

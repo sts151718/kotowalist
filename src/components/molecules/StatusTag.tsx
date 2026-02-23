@@ -33,7 +33,7 @@ export const StatusTag: FC<Props> = memo((props) => {
   const style = tagStyle[type];
 
   return (
-    <Tag.Root size="sm" colorPalette={style.colorPalette} borderRadius="full">
+    <Tag.Root size="sm" colorPalette={style.colorPalette} borderRadius="full" w="fit-content">
       {style.icon && <Tag.StartElement>{style.icon}</Tag.StartElement>}
       <Tag.Label fontSize="xx-small">{label ?? style.defaultLabel}</Tag.Label>
     </Tag.Root>
