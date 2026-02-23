@@ -4,13 +4,14 @@ import type { FC, ReactNode } from 'react';
 type Props = {
   header: ReactNode;
   children: ReactNode;
+  testId?: string;
 };
 
 export const TemplateDetailLayout: FC<Props> = (props) => {
-  const { header, children } = props;
+  const { header, children, testId = '' } = props;
 
   return (
-    <Card.Root borderRadius={8}>
+    <Card.Root borderRadius={8} data-testId={testId}>
       <Card.Header>{header}</Card.Header>
       <Card.Body px={0}>
         <Stack as="dl" spaceY={4} separator={<StackSeparator />}>

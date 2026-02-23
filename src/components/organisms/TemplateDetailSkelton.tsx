@@ -5,6 +5,7 @@ import { TemplateDetailLayout } from './TemplateDetailLayout';
 export const TemplateDetailSkelton: FC = memo(() => {
   return (
     <TemplateDetailLayout
+      testId="template-detail-skelton"
       header={
         <>
           <Skeleton h="24px" w="60%" mb={3} />

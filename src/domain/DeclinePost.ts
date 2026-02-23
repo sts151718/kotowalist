@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { IUser } from './User';
+import { User, type IUser } from './User';
 import type { JSONContent } from '@tiptap/core';
 import type { Json } from '@/lib/supabase/schema';
 
@@ -91,7 +91,7 @@ export class DeclincePost implements IDeclinePost {
         doneFlag: template.doneFlag,
         doneResult: template.doneResult ?? '',
       })),
-      post.user,
+      new User(post.user.id, post.user.userName),
       dayjs(post.updatedAt).format('YYYY/M/D')
     );
   }

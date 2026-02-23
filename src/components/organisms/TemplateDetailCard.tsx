@@ -62,7 +62,15 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
       <Box px={bodyPx}>
         <Box>
           {post.templates.map((template, index) => (
-            <Stack as="dl" spaceY={2} key={template.id} bg="gray.50" borderRadius="md" p={4}>
+            <Stack
+              as="dl"
+              spaceY={2}
+              key={template.id}
+              bg="gray.50"
+              borderRadius="md"
+              p={4}
+              data-testid={`template-detail-template${index + 1}`}
+            >
               <Box>
                 {template.doneFlag && <StatusTag type="done" />}
                 <Heading as="dt" size="sm" mb={2}>

@@ -1,9 +1,8 @@
 import { DeclincePost, type IDeclinePostSource } from '@/domain/DeclinePost';
-import { User } from '@/domain/User';
 import type { Tables } from './schema';
 import { supabase } from './setup';
 
-type PostRecord = Tables<'decline_posts'> & {
+export type PostRecord = Tables<'decline_posts'> & {
   decline_templates: Tables<'decline_templates'>[];
   users: Pick<Tables<'users'>, 'id' | 'user_name'>;
 };
@@ -21,7 +20,6 @@ export const selectPost = async (publicId: string): Promise<DeclincePost> => {
   }
 
   const post = data as PostRecord;
-  const user = new User(post.users.id, post.users.user_name);
 
   const templates = (post.decline_templates ?? []).map((template: Tables<'decline_templates'>) => ({
     id: template.id,
@@ -39,7 +37,10 @@ export const selectPost = async (publicId: string): Promise<DeclincePost> => {
     actualSituation: post.actual_situation,
     actualFeeling: post.actual_feeling,
     templates,
-    user,
+    user: {
+      id: post.user_id,
+      userName: post.users.user_name,
+    },
     updatedAt: post.updated_at,
   };
 
