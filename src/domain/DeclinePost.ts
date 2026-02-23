@@ -76,7 +76,7 @@ export class DeclincePost implements IDeclinePost {
     this.updatedAt = updatedAt;
   }
 
-  static create(post: IDeclinePostSource): DeclincePost {
+  public static create(post: IDeclinePostSource): DeclincePost {
     return new DeclincePost(
       post.id,
       post.publicId,
@@ -94,5 +94,9 @@ export class DeclincePost implements IDeclinePost {
       new User(post.user.id, post.user.userName),
       dayjs(post.updatedAt).format('YYYY/M/D')
     );
+  }
+
+  public hasDoneTemplate() {
+    return this.templates.some((template) => template.doneFlag);
   }
 }

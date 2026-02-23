@@ -149,6 +149,33 @@ describe('テンプレート詳細ページのテスト', () => {
     expect(updatedAt).toBeVisible();
   });
 
+  it('実行済みのテンプレートが1つ以上ある場合、実行済みタグが1つのみ表示されること。', async () => {
+    renderDetailPage({
+      ...mockDefaultPostRecord,
+      templates: mockDefaultPostRecord.templates.map((template) => ({
+        ...template,
+        doneFlag: true,
+      })),
+    });
+    const doneTags = await screen.findAllByText('実行済み');
+
+    expect(doneTags).toHaveLength(1);
+    expect(doneTags[0]).toBeVisible();
+  });
+
+  it('実行済みのテンプレートが1つもない場合、実行済みタグが表示されないこと。', async () => {
+    renderDetailPage({
+      ...mockDefaultPostRecord,
+      templates: mockDefaultPostRecord.templates.map((template) => ({
+        ...template,
+        doneFlag: false,
+      })),
+    });
+    const doneTag = screen.queryByText('実行済み');
+
+    expect(doneTag).not.toBeInTheDocument();
+  });
+
   it('実際の状況がHTMLで表示されていること。', async () => {
     renderDetailPage(mockDefaultPostRecord);
     const paragraph = await screen.findByText(/実際の.*テスト/);
@@ -225,24 +252,6 @@ describe('テンプレート詳細ページのテスト', () => {
 
     expect(openingText).toBeVisible();
     expect(closingText).toBeVisible();
-  });
-
-  it('実行済みの場合、実行済みタグが表示されること。', async () => {
-    renderDetailPage(mockDefaultPostRecord);
-
-    const template1 = await screen.findByTestId('template-detail-template1');
-    const doneTag = within(template1).getByText('実行済み');
-
-    expect(doneTag).toBeVisible();
-  });
-
-  it('実行済みでない場合、実行済みタグが表示されないこと。', async () => {
-    renderDetailPage(mockDefaultPostRecord);
-
-    const template2 = await screen.findByTestId('template-detail-template2');
-    const doneTag = within(template2).queryByText('実行済み');
-
-    expect(doneTag).not.toBeInTheDocument();
   });
 
   it('実行済みの場合、実行結果が表示されること。', async () => {
