@@ -77,7 +77,7 @@ const mockDefaultPostRecord: IDeclinePost = {
   ],
 };
 
-const renderDetailPage = (post: IDeclinePost, currentPostPromise?: Promise<DeclincePost>) => {
+const renderDetailPage = (post: IDeclinePost) => {
   const Stub = createRoutesStub([
     {
       Component: MainLayout,
@@ -87,7 +87,7 @@ const renderDetailPage = (post: IDeclinePost, currentPostPromise?: Promise<Decli
           Component: TemplateDetail,
           loader: () => {
             return {
-              currentPostPromise: currentPostPromise ?? Promise.resolve(DeclincePost.create(post)),
+              currentPostPromise: Promise.resolve(DeclincePost.create(post)),
             };
           },
         },
@@ -122,7 +122,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('ローディング中にスケルトンが表示されること', async () => {
-    renderDetailPage(mockDefaultPostRecord, new Promise<DeclincePost>(() => {}));
+    renderDetailPage(mockDefaultPostRecord);
     const skelton = await screen.findByTestId('template-detail-skelton');
 
     expect(skelton).toBeVisible();
