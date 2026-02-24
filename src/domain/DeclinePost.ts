@@ -27,10 +27,10 @@ export interface IDeclinePostSource {
   id: number;
   publicId: string;
   declineSituation: string;
-  demerit: Json | null;
-  actualSituation: Json | null;
-  actualFeeling: Json | null;
-  templates: Array<IDeclineTemplatesSource>;
+  demerit?: Json | null;
+  actualSituation?: Json | null;
+  actualFeeling?: Json | null;
+  templates?: Array<IDeclineTemplatesSource>;
   user: IUser;
   updatedAt: string;
 }
@@ -77,6 +77,7 @@ export class DeclincePost implements IDeclinePost {
   }
 
   public static create(post: IDeclinePostSource): DeclincePost {
+    const templates = post.templates ?? [];
     return new DeclincePost(
       post.id,
       post.publicId,
@@ -84,7 +85,7 @@ export class DeclincePost implements IDeclinePost {
       (post.demerit as JSONContent) ?? null,
       (post.actualSituation as JSONContent) ?? null,
       (post.actualFeeling as JSONContent) ?? null,
-      post.templates.map((template) => ({
+      templates.map((template) => ({
         id: template.id,
         openingText: template.openingText ?? '',
         closingText: template.closingText ?? '',

@@ -23,8 +23,8 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
             {post.declineSituation}
           </Heading>
           <HStack gap={4}>
-            <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.500" />
-            <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.500" />
+            <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.400" />
+            <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.400" />
           </HStack>
           {post.hasDoneTemplate() && <StatusTag type="done" />}
         </VStack>
