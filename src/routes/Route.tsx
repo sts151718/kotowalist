@@ -2,9 +2,10 @@ import { createBrowserRouter, RouterProvider, type LoaderFunctionArgs } from 're
 import { MainLayout } from '../components/layouts/MainLayout';
 import { TemplateDetail } from '../components/pages/TemplateDetail';
 import { Page404 } from '../components/pages/Page404';
-import { selectPost, selectPostList } from '@/lib/supabase/declinePosts';
+import { countAllPost, selectPost, selectPostList } from '@/lib/supabase/declinePosts';
 import type { DeclincePost } from '@/domain/DeclinePost';
 import { Top } from '@/components/pages/Top';
+import { POSTS_PAGE_PER_PAGE } from '@/consts/pagination';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -15,9 +16,10 @@ export const PageRoute = () => {
           path: '/',
           Component: Top,
           hydrateFallbackElement: <></>,
-          loader: (): { postListPromise: Promise<Array<DeclincePost>> } => {
+          loader: async (): Promise<{ postListPromise: Promise<Array<DeclincePost>> }> => {
             const page = 1;
-            const postListPromise = selectPostList(page);
+            const offset = (page - 1) * POSTS_PAGE_PER_PAGE;
+            const postListPromise = selectPostList(offset, POSTS_PAGE_PER_PAGE);
 
             return { postListPromise };
           },

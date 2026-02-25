@@ -37,10 +37,10 @@ export interface IDeclinePostSource {
 
 export interface IDeclineTemplatesSource {
   id: number;
-  openingText: string | null;
-  closingText: string | null;
+  openingText?: string | null;
+  closingText?: string | null;
   doneFlag: boolean;
-  doneResult: string | null;
+  doneResult?: string | null;
 }
 
 export class DeclincePost implements IDeclinePost {
