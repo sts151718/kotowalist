@@ -2,10 +2,11 @@ import { createBrowserRouter, RouterProvider, type LoaderFunctionArgs } from 're
 import { MainLayout } from '../components/layouts/MainLayout';
 import { TemplateDetail } from '../components/pages/TemplateDetail';
 import { Page404 } from '../components/pages/Page404';
-import { countAllPost, selectPost, selectPostList } from '@/lib/supabase/declinePosts';
+import { countAllPost, selectPost } from '@/lib/supabase/declinePosts';
 import type { DeclincePost } from '@/domain/DeclinePost';
 import { Top } from '@/components/pages/Top';
 import { POSTS_PAGE_PER_PAGE } from '@/consts/pagination';
+import { postListLoader } from './loader/postListLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -16,13 +17,18 @@ export const PageRoute = () => {
           path: '/',
           Component: Top,
           hydrateFallbackElement: <></>,
-          loader: async (): Promise<{ postListPromise: Promise<Array<DeclincePost>> }> => {
-            const page = 1;
-            const offset = (page - 1) * POSTS_PAGE_PER_PAGE;
-            const postListPromise = selectPostList(offset, POSTS_PAGE_PER_PAGE);
+          loader: async (): Promise<{ maxPage: number }> => {
+            const postTotal = await countAllPost();
 
-            return { postListPromise };
+            const maxPage = Math.ceil(postTotal / POSTS_PAGE_PER_PAGE);
+
+            return { maxPage };
           },
+        },
+        {
+          // 一覧読み込み用のルーティング
+          path: 'resources/posts',
+          loader: postListLoader,
         },
         {
           path: 'templates/:publicId',

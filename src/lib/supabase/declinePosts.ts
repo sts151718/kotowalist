@@ -58,7 +58,7 @@ export const selectPost = async (publicId: string): Promise<DeclincePost> => {
   return DeclincePost.create(decline);
 };
 
-export const selectPostList = async (offset: number, limit: number): Promise<Array<DeclincePost>> => {
+export const selectPostList = async (limit: number, offset: number = 0): Promise<Array<DeclincePost>> => {
   const { data, error } = await supabase
     .from('decline_posts')
     .select(
@@ -96,13 +96,11 @@ export const selectPostList = async (offset: number, limit: number): Promise<Arr
 };
 
 export const countAllPost = async (): Promise<number> => {
-  const { data, error } = await supabase
-    .from('decline_posts')
-    .select('count(id)')
-    .eq('decline_templates.done_flag', true)
-    .overrideTypes<Array<PostListRecord>>();
+  const { count, error } = await supabase.from('decline_posts').select('*', { count: 'exact', head: true });
 
   if (error) {
     throw new Error(`${error?.message}: ${error?.details}`);
   }
+
+  return count ?? 0;
 };
