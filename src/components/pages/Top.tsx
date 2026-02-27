@@ -35,35 +35,35 @@ export const Top: FC = () => {
       <Stack as="ul" gap={4}>
         {postList.map((post) => (
           <Link key={post.id} to={`/templates/${post.publicId}`}>
-          <Card.Root
-            size="sm"
-            variant="elevated"
-            shadow="sm"
-            cursor="pointer"
-            scale={1}
-            _active={{ scale: 0.98, shadow: 'xs' }}
-            _hover={{ shadow: 'md' }}
-          >
-            <Card.Header>
-              <Heading as="h3" size="sm">
-                {post.declineSituation}
-              </Heading>
-              <Text color="gray.400" fontSize="xs">
-                {post.user.userName}
-              </Text>
-            </Card.Header>
-            <Card.Body fontSize="xs">
-              {post.hasDoneTemplate() && (
-                <Box mb={2}>
-                  <StatusTag type="done" />
-                </Box>
-              )}
-              {post.actualSituation === null || <TipTapReactElement json={post.actualSituation} />}
-              <Text textAlign="right" color="gray.400" fontSize="xs">
-                {post.updatedAt}
-              </Text>
-            </Card.Body>
-          </Card.Root>
+            <Card.Root
+              size="sm"
+              variant="elevated"
+              shadow="sm"
+              cursor="pointer"
+              scale={1}
+              _active={{ scale: 0.98, shadow: 'xs' }}
+              _hover={{ shadow: 'md' }}
+            >
+              <Card.Header>
+                <Heading as="h3" size="sm">
+                  {post.declineSituation}
+                </Heading>
+                <Text color="gray.400" fontSize="xs">
+                  {post.user.userName}
+                </Text>
+              </Card.Header>
+              <Card.Body fontSize="xs">
+                {post.hasDoneTemplate() && (
+                  <Box mb={2}>
+                    <StatusTag type="done" />
+                  </Box>
+                )}
+                {post.actualSituation === null || <TipTapReactElement json={post.actualSituation} />}
+                <Text textAlign="right" color="gray.400" fontSize="xs">
+                  {post.updatedAt}
+                </Text>
+              </Card.Body>
+            </Card.Root>
           </Link>
         ))}
 
@@ -73,7 +73,7 @@ export const Top: FC = () => {
           </Center>
         )}
       </Stack>
-      <Float ref={targetRef} w="full" h={0} placement="bottom-center" zIndex={-1} />
+      <Box ref={targetRef} w="full" h={0} />
     </MainContainer>
   );
 };
