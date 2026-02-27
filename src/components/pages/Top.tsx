@@ -7,6 +7,7 @@ import { StatusTag } from '../molecules/StatusTag';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
 import { useFetchPostList } from '@/hooks/useFetchPostList';
 import { useInfinityScroll } from '@/hooks/useInfinityScroll';
+import { MainSpinner } from '../atoms/MainSpinner';
 
 export const Top: FC = () => {
   const { maxPage } = useLoaderData<{ maxPage: number }>();
