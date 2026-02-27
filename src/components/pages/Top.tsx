@@ -2,7 +2,7 @@ import { useEffect, type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
 import { Box, Card, Center, Float, Heading, Spinner, Stack, Text } from '@chakra-ui/react';
-import { useLoaderData } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
 import { StatusTag } from '../molecules/StatusTag';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
 import { useFetchPostList } from '@/hooks/useFetchPostList';
@@ -34,8 +34,8 @@ export const Top: FC = () => {
       <PrimaryHeading description="断り方のテンプレートを共有して、みんなで克服しよう">テンプレート一覧</PrimaryHeading>
       <Stack as="ul" gap={4}>
         {postList.map((post) => (
+          <Link key={post.id} to={`/templates/${post.publicId}`}>
           <Card.Root
-            key={post.id}
             size="sm"
             variant="elevated"
             shadow="sm"
@@ -64,6 +64,7 @@ export const Top: FC = () => {
               </Text>
             </Card.Body>
           </Card.Root>
+          </Link>
         ))}
 
         {isLoading && (
