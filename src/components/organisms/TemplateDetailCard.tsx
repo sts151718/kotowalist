@@ -2,7 +2,7 @@ import type { DeclincePost } from '@/domain/DeclinePost';
 import { Box, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import { memo, type FC } from 'react';
 import { FaRegCalendar, FaRegUser } from 'react-icons/fa';
-import { IconText } from '@/components/molecules/IconText';
+import { IconText } from '@/components/molecules/text/IconText';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
 import { TemplateDetailLayout } from './TemplateDetailLayout';
 import { StatusTag } from '../molecules/StatusTag';
