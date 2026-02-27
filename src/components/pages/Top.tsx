@@ -1,71 +1,33 @@
-import { useCallback, useEffect, useState, type FC } from 'react';
+import { useEffect, type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
 import { Box, Card, Center, Float, Heading, Spinner, Stack, Text } from '@chakra-ui/react';
-import { useFetcher, useLoaderData } from 'react-router';
-import { DeclincePost } from '@/domain/DeclinePost';
+import { useLoaderData } from 'react-router';
 import { StatusTag } from '../molecules/StatusTag';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
-import type { postListLoader } from '@/routes/loader/postListLoader';
-
-const calcHasMore = (maxPage: number, page: number) => maxPage >= page;
+import { useFetchPostList } from '@/hooks/useFetchPostList';
+import { useInfinityScroll } from '@/hooks/useInfinityScroll';
 
 export const Top: FC = () => {
   const { maxPage } = useLoaderData<{ maxPage: number }>();
-  const fetcher = useFetcher<typeof postListLoader>();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [postList, setPostList] = useState<Array<DeclincePost>>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(calcHasMore(maxPage, currentPage));
+  const { isLoading, postList, hasMore, fetchPostList } = useFetchPostList(maxPage);
+  const { targetRef } = useInfinityScroll({
+    isLoading,
+    hasMore,
+    callback: fetchPostList,
+    options: {
+      threshold: 1,
+      rootMargin: '0px 0px 100px 0px',
+    },
+  });
 
   useEffect(() => {
     (() => {
       // 初期表示時の一覧取得もここで行う。
-      fetcher.load(`/resources/posts?page=${currentPage}`);
+      fetchPostList();
     })();
   }, []);
-
-  useEffect(() => {
-    (() => {
-      if (fetcher.data) {
-        setPostList([...postList, ...fetcher.data]);
-        setIsLoading(false);
-      }
-    })();
-  }, [fetcher.data]);
-
-  const bottomRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (!node) return;
-
-      const option = {
-        root: null,
-        rootMargin: '0px 0px 100px 0px',
-        threshold: 1,
-      };
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !isLoading && hasMore) {
-            setIsLoading(true);
-
-            const nextPage = currentPage + 1;
-            setCurrentPage(nextPage);
-            setHasMore(calcHasMore(maxPage, nextPage));
-
-            fetcher.load(`/resources/posts?page=${nextPage}`);
-          }
-        });
-      }, option);
-
-      observer.observe(node);
-
-      return () => {
-        observer.unobserve(node);
-      };
-    },
-    [isLoading, fetcher, currentPage, hasMore, maxPage]
-  );
 
   return (
     <MainContainer>
@@ -110,7 +72,7 @@ export const Top: FC = () => {
           </Center>
         )}
       </Stack>
-      <Float ref={bottomRef} w="full" h={0} placement="bottom-center" zIndex={-1} />
+      <Float ref={targetRef} w="full" h={0} placement="bottom-center" zIndex={-1} />
     </MainContainer>
   );
 };
