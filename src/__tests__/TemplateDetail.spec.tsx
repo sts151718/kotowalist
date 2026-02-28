@@ -296,4 +296,17 @@ describe('テンプレート詳細ページのテスト', () => {
     expect(doneResultTitle).not.toBeInTheDocument();
     expect(doneResult).not.toBeInTheDocument();
   });
+
+  it('一覧ページへ戻るリンクをクリックすると、トップページに遷移すること', async () => {
+    renderDetailPage(mockDefaultPostRecord);
+    const backLink = await screen.findByRole('link', { name: '一覧へ戻る' });
+
+    const user = userEvent.setup();
+    await user.click(backLink);
+
+    await waitFor(() => {
+      const topPage = screen.getByTestId('top-page');
+      expect(topPage).toBeVisible();
+    });
+  });
 });
