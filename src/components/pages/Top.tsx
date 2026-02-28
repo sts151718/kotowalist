@@ -2,7 +2,7 @@ import { useEffect, type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
 import { Box, Center, Stack } from '@chakra-ui/react';
-import { Link, useLoaderData, useNavigate } from 'react-router';
+import { useLoaderData, useNavigate } from 'react-router';
 import { useFetchPostList } from '@/hooks/useFetchPostList';
 import { useInfinityScroll } from '@/hooks/useInfinityScroll';
 import { MainSpinner } from '../atoms/MainSpinner';
@@ -37,7 +37,7 @@ export const Top: FC = () => {
       <PrimaryHeading description="断り方のテンプレートを共有して、みんなで克服しよう">テンプレート一覧</PrimaryHeading>
       <Stack as="ul" gap={4}>
         {postList.map((post) => (
-          <Box as="li" onClick={() => onClickDetailPage(post.publicId)}>
+          <Box key={post.id} as="li" onClick={() => onClickDetailPage(post.publicId)}>
             <PostSummaryCard post={post} />
           </Box>
         ))}
@@ -47,7 +47,7 @@ export const Top: FC = () => {
           <MainSpinner />
         </Center>
       )}
-      <Box ref={targetRef} w="full" h={0} />
+      <Box ref={targetRef} w="full" h={0} data-testid="bottom-boundary" />
     </MainContainer>
   );
 };

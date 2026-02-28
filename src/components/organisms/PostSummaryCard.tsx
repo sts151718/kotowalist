@@ -2,7 +2,7 @@ import { Box, Card, Heading, Text } from '@chakra-ui/react';
 import type { FC } from 'react';
 import type { DeclincePost } from '@/domain/DeclinePost';
 import { StatusTag } from '../molecules/StatusTag';
-import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
+import { TipTapPlainText } from '../atoms/tiptap/TipTapPlainText';
 
 type Props = {
   post: DeclincePost;
@@ -33,7 +33,7 @@ export const PostSummaryCard: FC<Props> = ({ post }) => {
             <StatusTag type="done" />
           </Box>
         )}
-        {!!post.actualSituation && <TipTapReactElement json={post.actualSituation} />}
+        {!!post.actualSituation && <TipTapPlainText json={post.actualSituation} />}
         <Text textAlign="right" color="gray.400" fontSize="xs">
           {post.updatedAt}
         </Text>

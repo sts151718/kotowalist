@@ -64,9 +64,9 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
         <Box>
           {post.templates.map((template, index) => (
             <Stack
+              key={template.id}
               as="dl"
               spaceY={2}
-              key={template.id}
               bg="gray.50"
               borderRadius="md"
               p={4}

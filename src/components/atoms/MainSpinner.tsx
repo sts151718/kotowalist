@@ -8,5 +8,5 @@ type Props = {
 export const MainSpinner: FC<Props> = (props) => {
   const { size = 'md' } = props;
 
-  return <Spinner color="green.600" size={size} />;
+  return <Spinner color="green.600" size={size} data-testid="main-spinner" />;
 };

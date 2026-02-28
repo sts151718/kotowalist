@@ -10,7 +10,7 @@ export const TemplateDetail: FC = () => {
   const { currentPostPromise } = useLoaderData<{ currentPostPromise: Promise<DeclincePost> }>();
 
   return (
-    <MainContainer>
+    <MainContainer testId="template-detail-page">
       <BackLink to="/">一覧へ戻る</BackLink>
       <Suspense fallback={<TemplateDetailSkelton />}>
         <Await resolve={currentPostPromise}>{(currentPost) => <TemplateDetailCard post={currentPost} />}</Await>
