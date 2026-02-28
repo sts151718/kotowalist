@@ -5,7 +5,7 @@ import { DeclincePost } from '@/domain/DeclinePost';
 import { createRoutesStub, type LoaderFunctionArgs } from 'react-router';
 import { act, render, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
 import { Provider } from '@/components/ui/provider';
-import { POSTS_PAGE_PER_PAGE } from '@/consts/pagination';
+import { POSTS_PATPER_PAGE } from '@/consts/pagination';
 import { describe, expect, it } from 'vitest';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import userEvent from '@testing-library/user-event';
@@ -54,7 +54,7 @@ const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource
           path: '/',
           Component: Top,
           hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PAGE_PER_PAGE) }),
+          loader: async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PATPER_PAGE) }),
         },
         {
           path: '/resources/posts',
@@ -62,10 +62,10 @@ const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource
           loader: async ({ request }) => {
             const url = new URL(request.url);
             const page = Number(url.searchParams.get('page')) || 1;
-            const offset = (page - 1) * POSTS_PAGE_PER_PAGE;
+            const offset = (page - 1) * POSTS_PATPER_PAGE;
 
             return Promise.resolve(
-              postList.slice(offset, offset + POSTS_PAGE_PER_PAGE).map((post) => DeclincePost.create(post))
+              postList.slice(offset, offset + POSTS_PATPER_PAGE).map((post) => DeclincePost.create(post))
             );
           },
         },
@@ -117,7 +117,7 @@ describe('トップページのテスト', () => {
   });
 
   it('画面読み込み時にスピナーが表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE;
+    const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
     const spinner = await screen.findByTestId('main-spinner');
@@ -126,7 +126,7 @@ describe('トップページのテスト', () => {
   });
 
   it('データが最大取得件数以下の時に、一覧にデータ数分表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE;
+    const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
     const list = await screen.findByRole('list');
@@ -136,13 +136,13 @@ describe('トップページのテスト', () => {
   });
 
   it('データが最大取得件数より多い時に、初期ロード時に一覧に最大取得件数分のみ表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE + 1;
+    const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
     const list = await screen.findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
-    expect(items).toHaveLength(POSTS_PAGE_PER_PAGE);
+    expect(items).toHaveLength(POSTS_PATPER_PAGE);
   });
 
   it('投稿内に断りたい状況が表示されること', async () => {
@@ -212,7 +212,7 @@ describe('トップページのテスト', () => {
   });
 
   it('データが最大取得件数以下の時に、一覧にデータ数分表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE;
+    const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
     const list = await screen.findByRole('list');
@@ -222,17 +222,17 @@ describe('トップページのテスト', () => {
   });
 
   it('データが最大取得件数より多い時に、初期ロード時に一覧に最大取得件数分のみ表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE + 1;
+    const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
     const list = await screen.findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
-    expect(items).toHaveLength(POSTS_PAGE_PER_PAGE);
+    expect(items).toHaveLength(POSTS_PATPER_PAGE);
   });
 
   it('最下部までスクロールするとスピナーが表示されること。', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE + 1;
+    const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
     // 初回ロード完了を待つ
@@ -247,7 +247,7 @@ describe('トップページのテスト', () => {
   });
 
   it('最下部までスクロールすると投稿が追加で表示されること', async () => {
-    const postNum = POSTS_PAGE_PER_PAGE + 1;
+    const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
     // 初回ロード完了を待つ
