@@ -1,11 +1,18 @@
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
 import { createRoutesStub } from 'react-router';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from '@/components/ui/provider';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
+import { Top } from '@/components/pages/Top';
+
+vi.mock('@/hooks/useInfinityScroll', () => ({
+  useInfinityScroll: () => ({
+    targetRef: () => {},
+  }),
+}));
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
@@ -91,6 +98,18 @@ const renderDetailPage = (post: IDeclinePost) => {
             };
           },
         },
+        {
+          path: '/',
+          Component: Top,
+          hydrateFallbackElement: <></>,
+          loader: async () => ({ maxPage: 1 }),
+        },
+        {
+          path: '/resources/posts',
+          loader: async () => {
+            return Promise.resolve([]);
+          },
+        },
       ],
     },
   ]);
@@ -111,14 +130,18 @@ describe('テンプレート詳細ページのテスト', () => {
     expect(headerLogo).toBeVisible();
   });
 
-  // TODO トップページを作成した時に、テストを書く
-  it.skip('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
+  it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
     renderDetailPage(mockDefaultPostRecord);
     const header = await screen.findByRole('banner');
-    const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
+    const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
 
     const user = userEvent.setup();
-    await user.click(headerLogo);
+    await user.click(headerLogoLink);
+
+    await waitFor(() => {
+      const topPage = screen.getByTestId('top-page');
+      expect(topPage).toBeVisible();
+    });
   });
 
   it('ローディング中にスケルトンが表示されること', async () => {
@@ -272,5 +295,18 @@ describe('テンプレート詳細ページのテスト', () => {
 
     expect(doneResultTitle).not.toBeInTheDocument();
     expect(doneResult).not.toBeInTheDocument();
+  });
+
+  it('一覧ページへ戻るリンクをクリックすると、トップページに遷移すること', async () => {
+    renderDetailPage(mockDefaultPostRecord);
+    const backLink = await screen.findByRole('link', { name: '一覧へ戻る' });
+
+    const user = userEvent.setup();
+    await user.click(backLink);
+
+    await waitFor(() => {
+      const topPage = screen.getByTestId('top-page');
+      expect(topPage).toBeVisible();
+    });
   });
 });

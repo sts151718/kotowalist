@@ -2,7 +2,7 @@ import type { DeclincePost } from '@/domain/DeclinePost';
 import { Box, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import { memo, type FC } from 'react';
 import { FaRegCalendar, FaRegUser } from 'react-icons/fa';
-import { IconText } from '@/components/molecules/IconText';
+import { IconText } from '@/components/molecules/text/IconText';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
 import { TemplateDetailLayout } from './TemplateDetailLayout';
 import { StatusTag } from '../molecules/StatusTag';
@@ -23,8 +23,8 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
             {post.declineSituation}
           </Heading>
           <HStack gap={4}>
-            <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.500" />
-            <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.500" />
+            <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.400" />
+            <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.400" />
           </HStack>
           {post.hasDoneTemplate() && <StatusTag type="done" />}
         </VStack>
@@ -64,9 +64,9 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
         <Box>
           {post.templates.map((template, index) => (
             <Stack
+              key={template.id}
               as="dl"
               spaceY={2}
-              key={template.id}
               bg="gray.50"
               borderRadius="md"
               p={4}

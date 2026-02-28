@@ -1,9 +1,11 @@
-import { createBrowserRouter, RouterProvider, type LoaderFunctionArgs } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 import { MainLayout } from '../components/layouts/MainLayout';
 import { TemplateDetail } from '../components/pages/TemplateDetail';
 import { Page404 } from '../components/pages/Page404';
-import { selectPost } from '@/lib/supabase/declinePosts';
-import type { DeclincePost } from '@/domain/DeclinePost';
+import { Top } from '@/components/pages/Top';
+import { postListLoader } from './loader/postListLoader';
+import { topLoader } from './loader/topLoader';
+import { templateDetailLoader } from './loader/templateDetailLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -11,14 +13,21 @@ export const PageRoute = () => {
       Component: MainLayout,
       children: [
         {
+          path: '/',
+          Component: Top,
+          hydrateFallbackElement: <></>,
+          loader: topLoader,
+        },
+        {
+          // 一覧読み込み用のルーティング
+          path: 'resources/posts',
+          loader: postListLoader,
+        },
+        {
           path: 'templates/:publicId',
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
-          loader: ({ params }: LoaderFunctionArgs): { currentPostPromise: Promise<DeclincePost> } => {
-            const currentPostPromise = selectPost(params.publicId ?? '');
-
-            return { currentPostPromise };
-          },
+          loader: templateDetailLoader,
         },
         {
           path: '*',
