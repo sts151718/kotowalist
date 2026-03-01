@@ -7,6 +7,7 @@ import { postListLoader } from './loader/postListLoader';
 import { topLoader } from './loader/topLoader';
 import { templateDetailLoader } from './loader/templateDetailLoader';
 import { Signup } from '@/components/pages/SignUp';
+import { signupAction } from './actions/signupAction';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -33,6 +34,7 @@ export const PageRoute = () => {
         {
           path: 'signup',
           Component: Signup,
+          action: signupAction,
         },
         {
           path: '*',

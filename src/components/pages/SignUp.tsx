@@ -1,11 +1,12 @@
 import { Button, Card, Field, Fieldset, Heading, Input, Text } from '@chakra-ui/react';
 import type { FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
-import { Form } from 'react-router';
+import { Form, useActionData } from 'react-router';
 import { PrimaryLink } from '../atoms/link/PrimaryLink';
+import type { SignupError } from '@/routes/actions/signupAction';
 
 export const Signup: FC = () => {
-  // const actionData = useActionData<{ signupError?: boolean }>();
+  const actionData = useActionData<SignupError>();
 
   return (
     <MainContainer data-testid="sign-up-page">
@@ -15,7 +16,7 @@ export const Signup: FC = () => {
         </Card.Header>
         <Card.Body>
           <Form method="post">
-            <Fieldset.Root mb={6}>
+            <Fieldset.Root mb={6} invalid={actionData?.signupError}>
               <Fieldset.Content>
                 <Field.Root>
                   <Field.Label>ユーザー名</Field.Label>
@@ -36,6 +37,7 @@ export const Signup: FC = () => {
                   <Input placeholder="••••••••" type="password" name="password_confirm" />
                 </Field.Root>
               </Fieldset.Content>
+              <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
             </Fieldset.Root>
 
             <Button w="full" colorPalette="blue" mb={4} type="submit">
