@@ -8,7 +8,9 @@ const config = defineConfig({
     semanticTokens: {
       colors: {
         fg: {
-          value: { _light: '{colors.gray.700}', _dark: '{colors.gray.50}' },
+          DEFAULT: {
+            value: { _light: '{colors.gray.700}', _dark: '{colors.gray.50}' },
+          },
         },
         fgMuted: {
           value: { _light: '{colors.gray.500}', _dark: '{colors.gray.400}' },
@@ -22,6 +24,9 @@ const config = defineConfig({
       padding: 0,
       color: 'fg',
       bg: 'gray.50',
+    },
+    '*::placeholder': {
+      color: 'gray.400',
     },
   },
 });
