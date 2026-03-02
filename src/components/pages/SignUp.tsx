@@ -1,7 +1,7 @@
 import { Button, Card, Field, Fieldset, Heading, Input, Text } from '@chakra-ui/react';
 import type { FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
-import { Form, useActionData } from 'react-router';
+import { Form, useActionData, useSubmit } from 'react-router';
 import { PrimaryLink } from '../atoms/link/PrimaryLink';
 import type { SignupError } from '@/routes/actions/signupAction';
 import z from 'zod';
@@ -32,18 +32,19 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export const Signup: FC = () => {
   const actionData = useActionData<SignupError>();
+  const submit = useSubmit();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<SignupFormValues>({
+    formState: { errors, isValid },
+  } = useForm<SignupForm>({
     mode: 'onBlur',
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit: SubmitHandler<SignupFormValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SignupForm> = (data) => {
+    submit(data, { method: 'post' });
   };
 
   return (
@@ -82,7 +83,7 @@ export const Signup: FC = () => {
               <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
             </Fieldset.Root>
 
-            <Button w="full" colorPalette="blue" mb={4} type="submit">
+            <Button w="full" colorPalette="blue" mb={4} type="submit" disabled={!isValid}>
               新規登録
             </Button>
 
