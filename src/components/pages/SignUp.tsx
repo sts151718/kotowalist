@@ -7,6 +7,7 @@ import type { SignupError } from '@/routes/actions/signupAction';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { existsEmail, existsUserName } from '@/lib/supabase/users';
 
 const signupSchema = z
   .object({
@@ -14,8 +15,15 @@ const signupSchema = z
       .string()
       .min(3, { message: 'ユーザー名は3文字以上で入力してください' })
       .max(20, { message: 'ユーザー名は20文字以内で入力してください' })
-      .regex(/^[a-zA-Z_]+$/, { message: 'ユーザー名は英数字とアンダーバーのみ使用可能です' }),
-    email: z.email({ message: '有効なメールアドレスを入力してください' }),
+      .regex(/^[a-zA-Z0-9_]+$/, { message: 'ユーザー名は英数字とアンダーバーのみ使用可能です' })
+      .refine(async (user_name) => existsUserName(user_name), {
+        message: '入力したユーザー名が重複しています。',
+      }),
+    email: z
+      .email({ message: '有効なメールアドレスを入力してください' })
+      .refine(async (email) => await existsEmail(email), {
+        message: '入力したパスワードが重複しています。',
+      }),
     password: z
       .string()
       .min(10, { message: 'パスワードは10文字以上で入力してください' })
@@ -28,7 +36,7 @@ const signupSchema = z
     path: ['password_confirm'],
   });
 
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SignupForm = z.infer<typeof signupSchema>;
 
 export const Signup: FC = () => {
   const actionData = useActionData<SignupError>();
