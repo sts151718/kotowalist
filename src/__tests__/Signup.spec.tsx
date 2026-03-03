@@ -9,8 +9,8 @@ import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers
 
 vi.mock('@/lib/supabase/users');
 
-const renderSignupPage = async (action: ActionFunction = async () => ({})) => {
-  const defaultChildrenRoot = await createDefaultMainLayoutRoot();
+const renderSignupPage = (action: ActionFunction = async () => ({})) => {
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const signupRoute = defaultChildrenRoot.find((route) => route.path === 'signup')!;
 
