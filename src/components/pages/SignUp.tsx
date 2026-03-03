@@ -38,7 +38,7 @@ const signupSchema = z
 
 type SignupForm = z.infer<typeof signupSchema>;
 
-export const Signup: FC = () => {
+export const SignUp: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const actionData = useActionData<SignupError>();
   const submit = useSubmit();

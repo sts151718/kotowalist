@@ -42,10 +42,13 @@ const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> =>
   }));
 };
 
-const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource> = createMockPostList(postsNum)) => {
+const renderTopPage = async (
+  postsNum: number = 21,
+  postList: Array<IDeclinePostSource> = createMockPostList(postsNum)
+) => {
   const totalPostsNum = postList.length;
 
-  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+  const defaultChildrenRoot = await createDefaultMainLayoutRoot();
   const topRoute = defaultChildrenRoot.find((route) => route.path === '/')!;
   const postsRoute = defaultChildrenRoot.find((route) => route.path === '/resources/posts')!;
 
