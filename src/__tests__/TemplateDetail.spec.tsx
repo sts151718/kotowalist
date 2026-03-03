@@ -2,13 +2,11 @@ import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
 import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { Provider } from '@/components/ui/provider';
-import { MainLayout } from '@/components/layouts/MainLayout';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
-import { Top } from '@/components/pages/Top';
 import 'react-intersection-observer/test-utils';
-import { Signup } from '@/components/pages/SignUp';
+import { Provider } from '@/components/ui/provider';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
@@ -81,38 +79,21 @@ const mockDefaultPostRecord: IDeclinePost = {
 };
 
 const renderDetailPage = (post: IDeclinePost) => {
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+
   const Stub = createRoutesStub([
-    {
-      Component: MainLayout,
-      children: [
-        {
-          path: `/templates/${post.publicId}`,
-          Component: TemplateDetail,
-          loader: () => {
-            return {
-              currentPostPromise: Promise.resolve(DeclincePost.create(post)),
-            };
-          },
+    createMainLayoutStubRoot([
+      ...defaultChildrenRoot,
+      {
+        path: `/templates/${post.publicId}`,
+        Component: TemplateDetail,
+        loader: () => {
+          return {
+            currentPostPromise: Promise.resolve(DeclincePost.create(post)),
+          };
         },
-        {
-          path: '/',
-          Component: Top,
-          hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: 1 }),
-        },
-        {
-          path: '/resources/posts',
-          loader: async () => {
-            return Promise.resolve([]);
-          },
-        },
-        {
-          path: 'signup',
-          Component: Signup,
-          action: () => ({}),
-        },
-      ],
-    },
+      },
+    ]),
   ]);
 
   render(

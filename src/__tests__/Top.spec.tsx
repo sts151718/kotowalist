@@ -1,16 +1,14 @@
-import { MainLayout } from '@/components/layouts/MainLayout';
-import { Top } from '@/components/pages/Top';
 import { type IDeclinePostSource } from '@/domain/DeclinePost';
 import { DeclincePost } from '@/domain/DeclinePost';
 import { createRoutesStub, type LoaderFunctionArgs } from 'react-router';
 import { act, render, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { Provider } from '@/components/ui/provider';
 import { POSTS_PATPER_PAGE } from '@/consts/pagination';
 import { describe, expect, it } from 'vitest';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import userEvent from '@testing-library/user-event';
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
-import { Signup } from '@/components/pages/SignUp';
+import { Provider } from '@/components/ui/provider';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> => {
   return [...Array(postsNum).keys()].map((index) => ({
@@ -47,48 +45,35 @@ const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> =>
 const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource> = createMockPostList(postsNum)) => {
   const totalPostsNum = postList.length;
 
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+  const topRoute = defaultChildrenRoot.find((route) => route.path === '/')!;
+  const postsRoute = defaultChildrenRoot.find((route) => route.path === '/resources/posts')!;
+
+  topRoute.loader = async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PATPER_PAGE) });
+  postsRoute.loader = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const offset = (page - 1) * POSTS_PATPER_PAGE;
+
+    return Promise.resolve(postList.slice(offset, offset + POSTS_PATPER_PAGE).map((post) => DeclincePost.create(post)));
+  };
+
   const Stub = createRoutesStub([
-    {
-      Component: MainLayout,
-      children: [
-        {
-          path: '/',
-          Component: Top,
-          hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PATPER_PAGE) }),
-        },
-        {
-          path: '/resources/posts',
-          hydrateFallbackElement: <></>,
-          loader: async ({ request }) => {
-            const url = new URL(request.url);
-            const page = Number(url.searchParams.get('page')) || 1;
-            const offset = (page - 1) * POSTS_PATPER_PAGE;
+    createMainLayoutStubRoot([
+      ...defaultChildrenRoot,
+      {
+        path: `/templates/:publicId`,
+        Component: TemplateDetail,
+        hydrateFallbackElement: <></>,
+        loader: ({ params }: LoaderFunctionArgs) => {
+          const post = postList.find((post) => post.publicId === (params.publicId ?? ''));
 
-            return Promise.resolve(
-              postList.slice(offset, offset + POSTS_PATPER_PAGE).map((post) => DeclincePost.create(post))
-            );
-          },
+          return {
+            currentPostPromise: Promise.resolve(DeclincePost.create(post!)),
+          };
         },
-        {
-          path: `/templates/:publicId`,
-          Component: TemplateDetail,
-          hydrateFallbackElement: <></>,
-          loader: ({ params }: LoaderFunctionArgs) => {
-            const post = postList.find((post) => post.publicId === (params.publicId ?? ''));
-
-            return {
-              currentPostPromise: Promise.resolve(DeclincePost.create(post!)),
-            };
-          },
-        },
-        {
-          path: 'signup',
-          Component: Signup,
-          action: () => ({}),
-        },
-      ],
-    },
+      },
+    ]),
   ]);
 
   render(

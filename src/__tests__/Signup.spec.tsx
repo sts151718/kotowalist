@@ -1,42 +1,21 @@
-import { MainLayout } from '@/components/layouts/MainLayout';
-import { Top } from '@/components/pages/Top';
-import { Signup } from '@/components/pages/SignUp';
-import { Provider } from '@/components/ui/provider';
 import { existsEmail, existsUserName } from '@/lib/supabase/users';
+import { createRoutesStub, redirect, type ActionFunction, type ActionFunctionArgs } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRoutesStub, redirect, type ActionFunction, type ActionFunctionArgs } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import 'react-intersection-observer/test-utils';
+import { Provider } from '@/components/ui/provider';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 vi.mock('@/lib/supabase/users');
 
 const renderSignupPage = (action: ActionFunction = async () => ({})) => {
-  const Stub = createRoutesStub([
-    {
-      Component: MainLayout,
-      children: [
-        {
-          path: '/',
-          Component: Top,
-          hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: 1 }),
-        },
-        {
-          path: '/resources/posts',
-          hydrateFallbackElement: <></>,
-          loader: async () => {
-            return Promise.resolve([]);
-          },
-        },
-        {
-          path: 'signup',
-          Component: Signup,
-          action,
-        },
-      ],
-    },
-  ]);
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+
+  const signupRoute = defaultChildrenRoot.find((route) => route.path === 'signup')!;
+
+  signupRoute.action = action;
+  const Stub = createRoutesStub([createMainLayoutStubRoot(defaultChildrenRoot)]);
 
   render(
     <Provider>
