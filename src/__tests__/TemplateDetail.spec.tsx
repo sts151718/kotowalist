@@ -78,8 +78,8 @@ const mockDefaultPostRecord: IDeclinePost = {
   ],
 };
 
-const renderDetailPage = (post: IDeclinePost) => {
-  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+const renderDetailPage = async (post: IDeclinePost) => {
+  const defaultChildrenRoot = await createDefaultMainLayoutRoot();
 
   const Stub = createRoutesStub([
     createMainLayoutStubRoot([
