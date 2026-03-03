@@ -129,7 +129,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(postNum);
@@ -139,7 +140,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(POSTS_PATPER_PAGE);
@@ -197,7 +199,9 @@ describe('トップページのテスト', () => {
   it('投稿をクリックすると、対象の詳細ページが表示されること。', async () => {
     renderTopPage(1);
 
-    const item = await screen.findByRole('listitem');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
+    const item = await within(list).findByRole('listitem');
 
     const user = userEvent.setup();
     await user.click(item);
@@ -215,7 +219,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(postNum);
@@ -225,7 +230,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(POSTS_PATPER_PAGE);
