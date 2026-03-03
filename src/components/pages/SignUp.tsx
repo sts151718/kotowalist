@@ -1,5 +1,5 @@
 import { Button, Card, Field, Fieldset, Heading, Input, Text } from '@chakra-ui/react';
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { Form, useActionData, useSubmit } from 'react-router';
 import { PrimaryLink } from '../atoms/link/PrimaryLink';
@@ -39,6 +39,7 @@ const signupSchema = z
 type SignupForm = z.infer<typeof signupSchema>;
 
 export const Signup: FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const actionData = useActionData<SignupError>();
   const submit = useSubmit();
 
@@ -52,11 +53,12 @@ export const Signup: FC = () => {
   });
 
   const onSubmit: SubmitHandler<SignupForm> = (data) => {
+    setIsLoading(true);
     submit(data, { method: 'post' });
   };
 
   return (
-    <MainContainer data-testid="sign-up-page">
+    <MainContainer testId="sign-up-page">
       <Card.Root textAlign="center">
         <Card.Header>
           <Heading as="h2">新規登録</Heading>
@@ -91,7 +93,14 @@ export const Signup: FC = () => {
               <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
             </Fieldset.Root>
 
-            <Button w="full" colorPalette="blue" mb={4} type="submit" disabled={!isValid}>
+            <Button
+              w="full"
+              colorPalette="blue"
+              mb={4}
+              type="submit"
+              disabled={!isValid || isLoading}
+              loading={isLoading}
+            >
               新規登録
             </Button>
 

@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import userEvent from '@testing-library/user-event';
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
+import { Signup } from '@/components/pages/SignUp';
 
 const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> => {
   return [...Array(postsNum).keys()].map((index) => ({
@@ -81,6 +82,11 @@ const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource
             };
           },
         },
+        {
+          path: 'signup',
+          Component: Signup,
+          action: () => ({}),
+        },
       ],
     },
   ]);
@@ -101,6 +107,23 @@ describe('トップページのテスト', () => {
 
     expect(headerLogo).toBeVisible();
   });
+
+  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
+    renderTopPage(0);
+
+    const header = await screen.findByRole('banner');
+    const signupButton = within(header).getByRole('button', { name: '新規登録' });
+
+    const user = userEvent.setup();
+    await user.click(signupButton);
+
+    await waitFor(() => {
+      const singupPage = screen.getByTestId('sign-up-page');
+      expect(singupPage).toBeVisible();
+    });
+  });
+
+  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること。', async () => {
     renderTopPage(0);

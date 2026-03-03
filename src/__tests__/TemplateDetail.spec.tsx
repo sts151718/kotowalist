@@ -7,12 +7,8 @@ import { MainLayout } from '@/components/layouts/MainLayout';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
 import { Top } from '@/components/pages/Top';
-
-vi.mock('@/hooks/useInfinityScroll', () => ({
-  useInfinityScroll: () => ({
-    targetRef: () => {},
-  }),
-}));
+import 'react-intersection-observer/test-utils';
+import { Signup } from '@/components/pages/SignUp';
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
@@ -110,6 +106,11 @@ const renderDetailPage = (post: IDeclinePost) => {
             return Promise.resolve([]);
           },
         },
+        {
+          path: 'signup',
+          Component: Signup,
+          action: () => ({}),
+        },
       ],
     },
   ]);
@@ -143,6 +144,23 @@ describe('テンプレート詳細ページのテスト', () => {
       expect(topPage).toBeVisible();
     });
   });
+
+  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
+    renderDetailPage(mockDefaultPostRecord);
+
+    const header = await screen.findByRole('banner');
+    const signupButton = within(header).getByRole('button', { name: '新規登録' });
+
+    const user = userEvent.setup();
+    await user.click(signupButton);
+
+    await waitFor(() => {
+      const singupPage = screen.getByTestId('sign-up-page');
+      expect(singupPage).toBeVisible();
+    });
+  });
+
+  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ローディング中にスケルトンが表示されること', async () => {
     renderDetailPage(mockDefaultPostRecord);
