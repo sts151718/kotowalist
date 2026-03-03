@@ -6,6 +6,8 @@ import { Top } from '@/components/pages/Top';
 import { postListLoader } from './loader/postListLoader';
 import { topLoader } from './loader/topLoader';
 import { templateDetailLoader } from './loader/templateDetailLoader';
+import { Signup } from '@/components/pages/SignUp';
+import { signupAction } from './actions/signupAction';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -28,6 +30,11 @@ export const PageRoute = () => {
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
           loader: templateDetailLoader,
+        },
+        {
+          path: 'signup',
+          Component: Signup,
+          action: signupAction,
         },
         {
           path: '*',

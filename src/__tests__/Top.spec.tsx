@@ -1,15 +1,14 @@
-import { MainLayout } from '@/components/layouts/MainLayout';
-import { Top } from '@/components/pages/Top';
 import { type IDeclinePostSource } from '@/domain/DeclinePost';
 import { DeclincePost } from '@/domain/DeclinePost';
 import { createRoutesStub, type LoaderFunctionArgs } from 'react-router';
 import { act, render, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { Provider } from '@/components/ui/provider';
 import { POSTS_PATPER_PAGE } from '@/consts/pagination';
 import { describe, expect, it } from 'vitest';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import userEvent from '@testing-library/user-event';
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
+import { Provider } from '@/components/ui/provider';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> => {
   return [...Array(postsNum).keys()].map((index) => ({
@@ -46,43 +45,35 @@ const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> =>
 const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource> = createMockPostList(postsNum)) => {
   const totalPostsNum = postList.length;
 
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+  const topRoute = defaultChildrenRoot.find((route) => route.path === '/')!;
+  const postsRoute = defaultChildrenRoot.find((route) => route.path === '/resources/posts')!;
+
+  topRoute.loader = async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PATPER_PAGE) });
+  postsRoute.loader = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const offset = (page - 1) * POSTS_PATPER_PAGE;
+
+    return Promise.resolve(postList.slice(offset, offset + POSTS_PATPER_PAGE).map((post) => DeclincePost.create(post)));
+  };
+
   const Stub = createRoutesStub([
-    {
-      Component: MainLayout,
-      children: [
-        {
-          path: '/',
-          Component: Top,
-          hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: Math.ceil(totalPostsNum / POSTS_PATPER_PAGE) }),
-        },
-        {
-          path: '/resources/posts',
-          hydrateFallbackElement: <></>,
-          loader: async ({ request }) => {
-            const url = new URL(request.url);
-            const page = Number(url.searchParams.get('page')) || 1;
-            const offset = (page - 1) * POSTS_PATPER_PAGE;
+    createMainLayoutStubRoot([
+      ...defaultChildrenRoot,
+      {
+        path: `/templates/:publicId`,
+        Component: TemplateDetail,
+        hydrateFallbackElement: <></>,
+        loader: ({ params }: LoaderFunctionArgs) => {
+          const post = postList.find((post) => post.publicId === (params.publicId ?? ''));
 
-            return Promise.resolve(
-              postList.slice(offset, offset + POSTS_PATPER_PAGE).map((post) => DeclincePost.create(post))
-            );
-          },
+          return {
+            currentPostPromise: Promise.resolve(DeclincePost.create(post!)),
+          };
         },
-        {
-          path: `/templates/:publicId`,
-          Component: TemplateDetail,
-          hydrateFallbackElement: <></>,
-          loader: ({ params }: LoaderFunctionArgs) => {
-            const post = postList.find((post) => post.publicId === (params.publicId ?? ''));
-
-            return {
-              currentPostPromise: Promise.resolve(DeclincePost.create(post!)),
-            };
-          },
-        },
-      ],
-    },
+      },
+    ]),
   ]);
 
   render(
@@ -101,6 +92,23 @@ describe('トップページのテスト', () => {
 
     expect(headerLogo).toBeVisible();
   });
+
+  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
+    renderTopPage(0);
+
+    const header = await screen.findByRole('banner');
+    const signupButton = within(header).getByRole('button', { name: '新規登録' });
+
+    const user = userEvent.setup();
+    await user.click(signupButton);
+
+    await waitFor(() => {
+      const singupPage = screen.getByTestId('sign-up-page');
+      expect(singupPage).toBeVisible();
+    });
+  });
+
+  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること。', async () => {
     renderTopPage(0);
@@ -129,7 +137,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(postNum);
@@ -139,7 +148,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(POSTS_PATPER_PAGE);
@@ -197,7 +207,9 @@ describe('トップページのテスト', () => {
   it('投稿をクリックすると、対象の詳細ページが表示されること。', async () => {
     renderTopPage(1);
 
-    const item = await screen.findByRole('listitem');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
+    const item = await within(list).findByRole('listitem');
 
     const user = userEvent.setup();
     await user.click(item);
@@ -215,7 +227,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(postNum);
@@ -225,7 +238,8 @@ describe('トップページのテスト', () => {
     const postNum = POSTS_PATPER_PAGE + 1;
     renderTopPage(postNum);
 
-    const list = await screen.findByRole('list');
+    const topPage = await screen.findByTestId('top-page');
+    const list = await within(topPage).findByRole('list');
     const items = await within(list).findAllByRole('listitem');
 
     expect(items).toHaveLength(POSTS_PATPER_PAGE);

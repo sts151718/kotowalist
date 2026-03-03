@@ -2,17 +2,11 @@ import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
 import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { Provider } from '@/components/ui/provider';
-import { MainLayout } from '@/components/layouts/MainLayout';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
-import { Top } from '@/components/pages/Top';
-
-vi.mock('@/hooks/useInfinityScroll', () => ({
-  useInfinityScroll: () => ({
-    targetRef: () => {},
-  }),
-}));
+import 'react-intersection-observer/test-utils';
+import { Provider } from '@/components/ui/provider';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
@@ -85,33 +79,21 @@ const mockDefaultPostRecord: IDeclinePost = {
 };
 
 const renderDetailPage = (post: IDeclinePost) => {
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
+
   const Stub = createRoutesStub([
-    {
-      Component: MainLayout,
-      children: [
-        {
-          path: `/templates/${post.publicId}`,
-          Component: TemplateDetail,
-          loader: () => {
-            return {
-              currentPostPromise: Promise.resolve(DeclincePost.create(post)),
-            };
-          },
+    createMainLayoutStubRoot([
+      ...defaultChildrenRoot,
+      {
+        path: `/templates/${post.publicId}`,
+        Component: TemplateDetail,
+        loader: () => {
+          return {
+            currentPostPromise: Promise.resolve(DeclincePost.create(post)),
+          };
         },
-        {
-          path: '/',
-          Component: Top,
-          hydrateFallbackElement: <></>,
-          loader: async () => ({ maxPage: 1 }),
-        },
-        {
-          path: '/resources/posts',
-          loader: async () => {
-            return Promise.resolve([]);
-          },
-        },
-      ],
-    },
+      },
+    ]),
   ]);
 
   render(
@@ -143,6 +125,23 @@ describe('テンプレート詳細ページのテスト', () => {
       expect(topPage).toBeVisible();
     });
   });
+
+  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
+    renderDetailPage(mockDefaultPostRecord);
+
+    const header = await screen.findByRole('banner');
+    const signupButton = within(header).getByRole('button', { name: '新規登録' });
+
+    const user = userEvent.setup();
+    await user.click(signupButton);
+
+    await waitFor(() => {
+      const singupPage = screen.getByTestId('sign-up-page');
+      expect(singupPage).toBeVisible();
+    });
+  });
+
+  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ローディング中にスケルトンが表示されること', async () => {
     renderDetailPage(mockDefaultPostRecord);
