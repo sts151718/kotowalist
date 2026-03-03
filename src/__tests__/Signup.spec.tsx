@@ -48,7 +48,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ヘッダーロゴが表示されていること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const header = screen.getByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
@@ -56,7 +56,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const header = screen.getByRole('banner');
     const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
 
@@ -70,7 +70,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const header = screen.getByRole('banner');
     const signupButton = within(header).getByRole('button', { name: '新規登録' });
 
@@ -86,7 +86,7 @@ describe('新規登録ページのテスト', () => {
   it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
 
     const pageTitle = screen.getByRole('heading', { level: 2, name: '新規登録' });
 
@@ -94,7 +94,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('各入力欄が表示されていること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
 
     const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
     const email = screen.getByRole('textbox', { name: 'メールアドレス' });
@@ -108,7 +108,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('新規登録ボタンが非活性状態で表示されていること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
 
     const signupPage = screen.getByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
@@ -118,7 +118,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ログインリンクが表示されていること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
 
     const signupPage = screen.getByTestId('sign-up-page');
     const loginLink = within(signupPage).getByRole('link', { name: 'ログイン' });
@@ -127,7 +127,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ユーザー名が不正な値のときにエラーメッセージが表示されること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const user = userEvent.setup();
 
     const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
@@ -141,7 +141,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('メールアドレスが不正な形式のときにエラーメッセージが表示されること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const user = userEvent.setup();
 
     const email = screen.getByRole('textbox', { name: 'メールアドレス' });
@@ -155,7 +155,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('パスワードが10文字以下のときにエラーメッセージが表示されること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const user = userEvent.setup();
 
     const password = screen.getByLabelText('パスワード');
@@ -168,7 +168,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('パスワードが許可外文字を含むときにエラーメッセージが表示されること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const user = userEvent.setup();
 
     const password = screen.getByLabelText('パスワード');
@@ -182,7 +182,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('確認パスワードが一致しないときにエラーメッセージが表示されること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
     const user = userEvent.setup();
 
     const password = screen.getByLabelText('パスワード');
@@ -202,7 +202,7 @@ describe('新規登録ページのテスト', () => {
     mockExistsUserName.mockResolvedValue(false);
     mockExistsEmail.mockResolvedValue(false);
 
-    renderSignupPage();
+    await renderSignupPage();
 
     await inputValidForm();
 
@@ -214,7 +214,7 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('有効な入力値を入れると新規登録ボタンが活性になること', async () => {
-    renderSignupPage();
+    await renderSignupPage();
 
     const signupPage = screen.getByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
@@ -228,7 +228,7 @@ describe('新規登録ページのテスト', () => {
 
   it('登録ボタンクリック後、エラーがあった場合、エラーメッセージが表示されること', async () => {
     const action = vi.fn(async () => ({ signupError: true as const }));
-    renderSignupPage(action);
+    await renderSignupPage(action);
 
     await inputValidForm();
 
@@ -249,7 +249,7 @@ describe('新規登録ページのテスト', () => {
       return redirect('/');
     });
 
-    renderSignupPage(action);
+    await renderSignupPage(action);
 
     await inputValidForm();
 
