@@ -4,7 +4,6 @@ import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
-import 'react-intersection-observer/test-utils';
 import { Provider } from '@/components/ui/provider';
 import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
@@ -78,8 +77,8 @@ const mockDefaultPostRecord: IDeclinePost = {
   ],
 };
 
-const renderDetailPage = async (post: IDeclinePost) => {
-  const defaultChildrenRoot = await createDefaultMainLayoutRoot();
+const renderDetailPage = (post: IDeclinePost) => {
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const Stub = createRoutesStub([
     createMainLayoutStubRoot([
@@ -105,7 +104,7 @@ const renderDetailPage = async (post: IDeclinePost) => {
 
 describe('テンプレート詳細ページのテスト', () => {
   it('ヘッダーロゴが表示されていること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
@@ -113,7 +112,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const header = await screen.findByRole('banner');
     const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
 
@@ -127,7 +126,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
 
     const header = await screen.findByRole('banner');
     const signupButton = within(header).getByRole('button', { name: '新規登録' });
@@ -144,35 +143,35 @@ describe('テンプレート詳細ページのテスト', () => {
   it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ローディング中にスケルトンが表示されること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const skelton = await screen.findByTestId('template-detail-skelton');
 
     expect(skelton).toBeVisible();
   });
 
   it('断りたい状況が表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const title = await screen.findByText(mockDefaultPostRecord.declineSituation);
 
     expect(title).toBeVisible();
   });
 
   it('ユーザー名が表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const userName = await screen.findByText(mockDefaultPostRecord.user.userName);
 
     expect(userName).toBeVisible();
   });
 
   it('最終更新日が表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const updatedAt = await screen.findByText(dayjs(mockDefaultPostRecord.updatedAt).format('YYYY/M/D'));
 
     expect(updatedAt).toBeVisible();
   });
 
   it('実行済みのテンプレートが1つ以上ある場合、実行済みタグが1つのみ表示されること。', async () => {
-    await renderDetailPage({
+    renderDetailPage({
       ...mockDefaultPostRecord,
       templates: mockDefaultPostRecord.templates.map((template) => ({
         ...template,
@@ -186,7 +185,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('実行済みのテンプレートが1つもない場合、実行済みタグが表示されないこと。', async () => {
-    await renderDetailPage({
+    renderDetailPage({
       ...mockDefaultPostRecord,
       templates: mockDefaultPostRecord.templates.map((template) => ({
         ...template,
@@ -199,7 +198,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('実際の状況がHTMLで表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const paragraph = await screen.findByText(/実際の.*テスト/);
     const underlinedText = within(paragraph).getByText('状況', { selector: 'u' });
 
@@ -209,7 +208,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('実際の状況が登録されていないとき、画面に表示されないこと。', async () => {
-    await renderDetailPage({
+    renderDetailPage({
       ...mockDefaultPostRecord,
       actualSituation: null,
     });
@@ -218,7 +217,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('当時の心境がHTMLで表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const paragraph = await screen.findByText(/当時の.*テスト/);
     const boldText = within(paragraph).getByText('状況', { selector: 'strong' });
 
@@ -228,7 +227,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('当時の心境が登録されていないとき、画面に表示されないこと。', async () => {
-    await renderDetailPage({
+    renderDetailPage({
       ...mockDefaultPostRecord,
       actualFeeling: null,
     });
@@ -237,7 +236,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('断らなかったときのデメリットがHTMLで表示されていること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const paragraph = await screen.findByText(/断らなかったときの.*テスト/);
     const boldText = within(paragraph).getByText('デメリット', { selector: 'strong' });
 
@@ -247,7 +246,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('断らなかったときのデメリットが登録されていないとき、画面に表示されないこと。', async () => {
-    await renderDetailPage({
+    renderDetailPage({
       ...mockDefaultPostRecord,
       demerit: null,
     });
@@ -256,7 +255,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('テンプレートが複数表示されること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
 
     const template1 = await screen.findByTestId('template-detail-template1');
     const template2 = await screen.findByTestId('template-detail-template2');
@@ -266,7 +265,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('テンプレートの初めの言葉と締めの言葉が表示されること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
 
     const template1 = await screen.findByTestId('template-detail-template1');
     const openingText = within(template1).getByText('1つ目の書き出しテスト');
@@ -277,7 +276,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('実行済みの場合、実行結果が表示されること。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
 
     const template1 = await screen.findByTestId('template-detail-template1');
     const doneResult = within(template1).getByText('実行結果テスト');
@@ -286,7 +285,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('実行済みでない場合、実行結果が表示されないこと。', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
 
     const template2 = await screen.findByTestId('template-detail-template2');
     const doneResultTitle = within(template2).queryByText('実行結果');
@@ -297,7 +296,7 @@ describe('テンプレート詳細ページのテスト', () => {
   });
 
   it('一覧ページへ戻るリンクをクリックすると、トップページに遷移すること', async () => {
-    await renderDetailPage(mockDefaultPostRecord);
+    renderDetailPage(mockDefaultPostRecord);
     const backLink = await screen.findByRole('link', { name: '一覧へ戻る' });
 
     const user = userEvent.setup();

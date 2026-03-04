@@ -42,13 +42,10 @@ const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> =>
   }));
 };
 
-const renderTopPage = async (
-  postsNum: number = 21,
-  postList: Array<IDeclinePostSource> = createMockPostList(postsNum)
-) => {
+const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource> = createMockPostList(postsNum)) => {
   const totalPostsNum = postList.length;
 
-  const defaultChildrenRoot = await createDefaultMainLayoutRoot();
+  const defaultChildrenRoot = createDefaultMainLayoutRoot();
   const topRoute = defaultChildrenRoot.find((route) => route.path === '/')!;
   const postsRoute = defaultChildrenRoot.find((route) => route.path === '/resources/posts')!;
 
@@ -88,7 +85,7 @@ const renderTopPage = async (
 
 describe('トップページのテスト', () => {
   it('ヘッダーロゴが表示されていること', async () => {
-    await renderTopPage(0);
+    renderTopPage(0);
 
     const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
@@ -97,7 +94,7 @@ describe('トップページのテスト', () => {
   });
 
   it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    await renderTopPage(0);
+    renderTopPage(0);
 
     const header = await screen.findByRole('banner');
     const signupButton = within(header).getByRole('button', { name: '新規登録' });
@@ -114,14 +111,14 @@ describe('トップページのテスト', () => {
   it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること。', async () => {
-    await renderTopPage(0);
+    renderTopPage(0);
     const pageTitle = await screen.findByRole('heading', { level: 2, name: 'テンプレート一覧' });
 
     expect(pageTitle).toBeVisible();
   });
 
   it('ページ説明文が表示されていること。', async () => {
-    await renderTopPage(0);
+    renderTopPage(0);
     const pageTitle = await screen.findByText('断り方のテンプレートを共有して、みんなで克服しよう');
 
     expect(pageTitle).toBeVisible();
@@ -129,7 +126,7 @@ describe('トップページのテスト', () => {
 
   it('画面読み込み時にスピナーが表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     const spinner = await screen.findByTestId('main-spinner');
 
@@ -138,7 +135,7 @@ describe('トップページのテスト', () => {
 
   it('データが最大取得件数以下の時に、一覧にデータ数分表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     const topPage = await screen.findByTestId('top-page');
     const list = await within(topPage).findByRole('list');
@@ -149,7 +146,7 @@ describe('トップページのテスト', () => {
 
   it('データが最大取得件数より多い時に、初期ロード時に一覧に最大取得件数分のみ表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE + 1;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     const topPage = await screen.findByTestId('top-page');
     const list = await within(topPage).findByRole('list');
@@ -159,35 +156,35 @@ describe('トップページのテスト', () => {
   });
 
   it('投稿内に断りたい状況が表示されること', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const declineSituation = await screen.findByRole('heading', { level: 3, name: 'テスト用の断り状況1' });
     expect(declineSituation).toBeVisible();
   });
 
   it('投稿内にユーザー名が表示されること', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const userName = await screen.findByText('test_user1');
     expect(userName).toBeVisible();
   });
 
   it('投稿に実際にあった状況が表示されること', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const actualSituation = await screen.findByText('実際の状況テスト1');
     expect(actualSituation).toBeVisible();
   });
 
   it('投稿に更新時刻が表示されること', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const updatedAt = await screen.findByText('2026/2/21');
     expect(updatedAt).toBeVisible();
   });
 
   it('実行済みの投稿の場合、実行済みタグが表示されること。', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const doneTag = await screen.findByText('実行済み');
     expect(doneTag).toBeVisible();
@@ -199,7 +196,7 @@ describe('トップページのテスト', () => {
       templates: [{ id: 1, doneFlag: false }],
     };
 
-    await renderTopPage(1, [undonePost]);
+    renderTopPage(1, [undonePost]);
 
     act(() => {
       const doneTag = screen.queryByText('実行済み');
@@ -208,7 +205,7 @@ describe('トップページのテスト', () => {
   });
 
   it('投稿をクリックすると、対象の詳細ページが表示されること。', async () => {
-    await renderTopPage(1);
+    renderTopPage(1);
 
     const topPage = await screen.findByTestId('top-page');
     const list = await within(topPage).findByRole('list');
@@ -228,7 +225,7 @@ describe('トップページのテスト', () => {
 
   it('データが最大取得件数以下の時に、一覧にデータ数分表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     const topPage = await screen.findByTestId('top-page');
     const list = await within(topPage).findByRole('list');
@@ -239,7 +236,7 @@ describe('トップページのテスト', () => {
 
   it('データが最大取得件数より多い時に、初期ロード時に一覧に最大取得件数分のみ表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE + 1;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     const topPage = await screen.findByTestId('top-page');
     const list = await within(topPage).findByRole('list');
@@ -250,7 +247,7 @@ describe('トップページのテスト', () => {
 
   it('最下部までスクロールするとスピナーが表示されること。', async () => {
     const postNum = POSTS_PATPER_PAGE + 1;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     // 初回ロード完了を待つ
     await screen.findByTestId('main-spinner');
@@ -265,7 +262,7 @@ describe('トップページのテスト', () => {
 
   it('最下部までスクロールすると投稿が追加で表示されること', async () => {
     const postNum = POSTS_PATPER_PAGE + 1;
-    await renderTopPage(postNum);
+    renderTopPage(postNum);
 
     // 初回ロード完了を待つ
     await screen.findByTestId('main-spinner');
