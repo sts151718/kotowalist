@@ -1,7 +1,7 @@
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { Top } from '@/components/pages/Top';
 import { createRoutesStub } from 'react-router';
-import { Signup } from '@/components/pages/SignUp';
+import { SignUp } from '@/components/pages/SignUp';
 import 'react-intersection-observer/test-utils';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
@@ -27,7 +27,7 @@ export const createDefaultMainLayoutRoot = (): StubChildRoute[] => [
   },
   {
     path: 'signup',
-    Component: Signup,
+    Component: SignUp,
     action: async () => ({}),
   },
 ];
