@@ -1,13 +1,10 @@
-import { existsEmail, existsUserName } from '@/lib/supabase/users';
 import { createRoutesStub, redirect, type ActionFunction, type ActionFunctionArgs } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import 'react-intersection-observer/test-utils';
 import { Provider } from '@/components/ui/provider';
 import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
-
-vi.mock('@/lib/supabase/users');
+import { existsEmail, existsUserName } from '@/lib/supabase/users';
 
 const renderSignupPage = (action: ActionFunction = async () => ({})) => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
