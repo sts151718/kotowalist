@@ -8,6 +8,7 @@ import { topLoader } from './loader/topLoader';
 import { templateDetailLoader } from './loader/templateDetailLoader';
 import { SignUp } from '@/components/pages/SignUp';
 import { signUpAction } from './actions/signUpAction';
+import { SignIn } from '@/components/pages/SignIn';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -35,6 +36,11 @@ export const PageRoute = () => {
           path: 'signup',
           Component: SignUp,
           action: signUpAction,
+        },
+        {
+          path: 'signin',
+          Component: SignIn,
+          action: () => {},
         },
         {
           path: '*',
