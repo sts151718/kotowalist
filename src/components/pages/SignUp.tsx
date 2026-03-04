@@ -1,15 +1,17 @@
-import { Button, Card, Field, Fieldset, Heading, Input, Text } from '@chakra-ui/react';
+import { Field, Fieldset, Input, Text } from '@chakra-ui/react';
 import { useState, type FC } from 'react';
-import { MainContainer } from '../atoms/layout/MainContainer';
-import { Form, useActionData, useSubmit } from 'react-router';
-import { PrimaryLink } from '../atoms/link/PrimaryLink';
-import type { SignupError } from '@/routes/actions/signupAction';
+import { useActionData, useSubmit } from 'react-router';
+import type { SignUpError } from '@/routes/actions/signUpAction';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { existsEmail, existsUserName } from '@/lib/supabase/users';
+import { MainContainer } from '../atoms/layout/MainContainer';
+import { PrimaryButton } from '../atoms/button/PrimaryButton';
+import { PrimaryLink } from '../atoms/link/PrimaryLink';
+import { AuthFormCard } from '../organisms/AuthFormCard';
 
-const signupSchema = z
+const signUpSchema = z
   .object({
     user_name: z
       .string()
@@ -36,81 +38,66 @@ const signupSchema = z
     path: ['password_confirm'],
   });
 
-type SignupForm = z.infer<typeof signupSchema>;
+type SignUpForm = z.infer<typeof signUpSchema>;
 
-export const Signup: FC = () => {
+export const SignUp: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const actionData = useActionData<SignupError>();
+  const actionData = useActionData<SignUpError>();
   const submit = useSubmit();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<SignupForm>({
+  } = useForm<SignUpForm>({
     mode: 'onBlur',
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit: SubmitHandler<SignupForm> = (data) => {
+  const onSubmit: SubmitHandler<SignUpForm> = (data) => {
     setIsLoading(true);
     submit(data, { method: 'post' });
   };
 
   return (
     <MainContainer testId="sign-up-page">
-      <Card.Root textAlign="center">
-        <Card.Header>
-          <Heading as="h2">新規登録</Heading>
-        </Card.Header>
-        <Card.Body>
-          <Form method="post" onSubmit={handleSubmit(onSubmit)}>
-            <Fieldset.Root mb={6} invalid={actionData?.signupError}>
-              <Fieldset.Content>
-                <Field.Root invalid={!!errors.user_name?.message}>
-                  <Field.Label>ユーザー名</Field.Label>
-                  <Input placeholder="user_name" {...register('user_name')} />
-                  <Field.HelperText>3〜20文字（英数字と_が使用可能）</Field.HelperText>
-                  <Field.ErrorText>{errors.user_name?.message}</Field.ErrorText>
-                </Field.Root>
-                <Field.Root invalid={!!errors.email?.message}>
-                  <Field.Label>メールアドレス</Field.Label>
-                  <Input placeholder="example.example.com" type="email" {...register('email')} />
-                  <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
-                </Field.Root>
-                <Field.Root invalid={!!errors.password?.message}>
-                  <Field.Label>パスワード</Field.Label>
-                  <Input placeholder="••••••••" type="password" {...register('password')} />
-                  <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
-                  <Field.HelperText>10〜50文字（英数字と!@#$%^&*-_が使用可能）</Field.HelperText>
-                </Field.Root>
-                <Field.Root invalid={!!errors.password_confirm?.message}>
-                  <Field.Label>パスワード（確認） </Field.Label>
-                  <Input placeholder="••••••••" type="password" {...register('password_confirm')} />
-                  <Field.ErrorText>{errors.password_confirm?.message}</Field.ErrorText>
-                </Field.Root>
-              </Fieldset.Content>
-              <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
-            </Fieldset.Root>
+      <AuthFormCard title="新規登録" onSubmit={handleSubmit(onSubmit)}>
+        <Fieldset.Root mb={6} invalid={actionData?.signupError}>
+          <Fieldset.Content>
+            <Field.Root invalid={!!errors.user_name?.message}>
+              <Field.Label>ユーザー名</Field.Label>
+              <Input placeholder="user_name" {...register('user_name')} />
+              <Field.HelperText>3〜20文字（英数字と_が使用可能）</Field.HelperText>
+              <Field.ErrorText>{errors.user_name?.message}</Field.ErrorText>
+            </Field.Root>
+            <Field.Root invalid={!!errors.email?.message}>
+              <Field.Label>メールアドレス</Field.Label>
+              <Input placeholder="example.example.com" type="email" {...register('email')} />
+              <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+            </Field.Root>
+            <Field.Root invalid={!!errors.password?.message}>
+              <Field.Label>パスワード</Field.Label>
+              <Input placeholder="••••••••" type="password" {...register('password')} />
+              <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+              <Field.HelperText>10〜50文字（英数字と!@#$%^&*-_が使用可能）</Field.HelperText>
+            </Field.Root>
+            <Field.Root invalid={!!errors.password_confirm?.message}>
+              <Field.Label>パスワード（確認） </Field.Label>
+              <Input placeholder="••••••••" type="password" {...register('password_confirm')} />
+              <Field.ErrorText>{errors.password_confirm?.message}</Field.ErrorText>
+            </Field.Root>
+          </Fieldset.Content>
+          <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
+        </Fieldset.Root>
 
-            <Button
-              w="full"
-              colorPalette="blue"
-              mb={4}
-              type="submit"
-              disabled={!isValid || isLoading}
-              loading={isLoading}
-            >
-              新規登録
-            </Button>
-
-            <Text fontSize="sm">
-              既にアカウントをお持ちの方は
-              <PrimaryLink to="/sign-in">ログイン</PrimaryLink>
-            </Text>
-          </Form>
-        </Card.Body>
-      </Card.Root>
+        <PrimaryButton w="full" mb={4} type="submit" disabled={!isValid || isLoading} loading={isLoading}>
+          新規登録
+        </PrimaryButton>
+        <Text fontSize="sm">
+          既にアカウントをお持ちの方は
+          <PrimaryLink to="/sign-in">ログイン</PrimaryLink>
+        </Text>
+      </AuthFormCard>
     </MainContainer>
   );
 };
