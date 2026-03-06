@@ -25,7 +25,9 @@ export const MainLayout: FC = () => {
     navigate('/templates/create');
   };
 
-  const onClickSignout = () => {};
+  const onClickSignout = () => {
+    supabase.auth.signOut({ scope: 'local' });
+  };
 
   return (
     <>
@@ -55,24 +57,25 @@ export const MainLayout: FC = () => {
               </Flex>
             </Box>
           ) : (
-          <Box as="nav" fontSize={{ base: 'xs', md: 'sm' }}>
+            <Box as="nav" fontSize={{ base: 'xs', md: 'sm' }}>
               <Flex as="ul" gap={2} alignItems="stretch">
-              <Box as="li" display="flex">
+                <Box as="li" display="flex">
                   <HeaderTextButton onClick={onClickSignin}>
-                  <Icon size="sm">
-                    <CiLogin />
-                  </Icon>
-                  ログイン
-                </HeaderLink>
-              </Box>
-              <Box as="li">
-                <HeaderNavButton onClick={onClickSignup}>
-                  <IoPersonAddOutline />
-                  新規登録
-                </HeaderNavButton>
-              </Box>
-            </Flex>
-          </Box>
+                    <Icon size="sm">
+                      <CiLogin />
+                    </Icon>
+                    ログイン
+                  </HeaderTextButton>
+                </Box>
+                <Box as="li">
+                  <HeaderPrimaryButton onClick={onClickSignup}>
+                    <IoPersonAddOutline />
+                    新規登録
+                  </HeaderPrimaryButton>
+                </Box>
+              </Flex>
+            </Box>
+          )}
         </Flex>
       </Box>
       <Box as="main" role="main">
