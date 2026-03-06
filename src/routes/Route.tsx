@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router';
 import { MainLayout } from '../components/layouts/MainLayout';
 import { TemplateDetail } from '../components/pages/TemplateDetail';
 import { Page404 } from '../components/pages/Page404';
@@ -9,11 +9,14 @@ import { templateDetailLoader } from './loader/templateDetailLoader';
 import { SignUp } from '@/components/pages/SignUp';
 import { signUpAction } from './actions/signUpAction';
 import { SignIn } from '@/components/pages/SignIn';
+import { signInAction } from './actions/signInAction';
+import { authLoader } from './loader/authClaimsLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
     {
       Component: MainLayout,
+      loader: authLoader,
       children: [
         {
           path: '/',
@@ -22,7 +25,6 @@ export const PageRoute = () => {
           loader: topLoader,
         },
         {
-          // 一覧読み込み用のルーティング
           path: 'resources/posts',
           loader: postListLoader,
         },
@@ -40,7 +42,7 @@ export const PageRoute = () => {
         {
           path: 'signin',
           Component: SignIn,
-          action: () => {},
+          action: signInAction,
         },
         {
           path: '*',

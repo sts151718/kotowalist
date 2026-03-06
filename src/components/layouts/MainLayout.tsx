@@ -1,17 +1,31 @@
 import { Box, Flex, Heading, Icon } from '@chakra-ui/react';
-import type { FC } from 'react';
+import { type FC } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router';
 import { IoPersonAddOutline } from 'react-icons/io5';
-import { HeaderLink } from '../atoms/link/HeaderLink';
-import { CiLogin } from 'react-icons/ci';
-import { HeaderNavButton } from '../atoms/button/HeaderNavButton';
+import { CiLogin, CiLogout } from 'react-icons/ci';
+import { HeaderPrimaryButton } from '../atoms/button/HeaderPrimaryButton';
+import { HeaderTextButton } from '../atoms/button/HeaderTextButton';
+import { useAuthState } from '@/hooks/useAuthState';
+import { LuCirclePlus } from 'react-icons/lu';
+import { supabase } from '@/lib/supabase/setup';
 
 export const MainLayout: FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthState();
 
   const onClickSignup = () => {
     navigate('/signup');
   };
+
+  const onClickSignin = () => {
+    navigate('/signin');
+  };
+
+  const onClickCreate = () => {
+    navigate('/templates/create');
+  };
+
+  const onClickSignout = () => {};
 
   return (
     <>
@@ -21,10 +35,30 @@ export const MainLayout: FC = () => {
             <Link to="/">断リスト</Link>
           </Heading>
 
+          {isAuthenticated ? (
+            <Box as="nav" fontSize={{ base: 'xs', md: 'sm' }}>
+              <Flex as="ul" gap={2} alignItems="stretch">
+                <Box as="li">
+                  <HeaderPrimaryButton onClick={onClickCreate}>
+                    <LuCirclePlus />
+                    新規投稿
+                  </HeaderPrimaryButton>
+                </Box>
+                <Box as="li">
+                  <HeaderTextButton onClick={onClickSignout}>
+                    <Icon size="sm">
+                      <CiLogout />
+                    </Icon>
+                    ログアウト
+                  </HeaderTextButton>
+                </Box>
+              </Flex>
+            </Box>
+          ) : (
           <Box as="nav" fontSize={{ base: 'xs', md: 'sm' }}>
-            <Flex as="ul" gap={4} alignItems="stretch">
+              <Flex as="ul" gap={2} alignItems="stretch">
               <Box as="li" display="flex">
-                <HeaderLink to="/signin">
+                  <HeaderTextButton onClick={onClickSignin}>
                   <Icon size="sm">
                     <CiLogin />
                   </Icon>

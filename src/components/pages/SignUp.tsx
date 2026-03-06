@@ -62,7 +62,7 @@ export const SignUp: FC = () => {
   return (
     <MainContainer testId="sign-up-page">
       <AuthFormCard title="新規登録" onSubmit={handleSubmit(onSubmit)}>
-        <Fieldset.Root mb={6} invalid={actionData?.signupError}>
+        <Fieldset.Root mb={6} invalid={actionData?.isError}>
           <Fieldset.Content>
             <Field.Root invalid={!!errors.user_name?.message}>
               <Field.Label>ユーザー名</Field.Label>
@@ -95,7 +95,7 @@ export const SignUp: FC = () => {
         </PrimaryButton>
         <Text fontSize="sm">
           既にアカウントをお持ちの方は
-          <PrimaryLink to="/sign-in">ログイン</PrimaryLink>
+          <PrimaryLink to="/signin">ログイン</PrimaryLink>
         </Text>
       </AuthFormCard>
     </MainContainer>

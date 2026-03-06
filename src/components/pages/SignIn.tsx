@@ -7,10 +7,12 @@ import { MainContainer } from '../atoms/layout/MainContainer';
 import { PrimaryButton } from '../atoms/button/PrimaryButton';
 import { PrimaryLink } from '../atoms/link/PrimaryLink';
 import { AuthFormCard } from '../organisms/AuthFormCard';
+import { useActionData, useSubmit } from 'react-router';
+import type { SignInError } from '@/routes/actions/signInAction';
 
 const signInSchema = z.object({
   email: z.email({ message: '有効なメールアドレスを入力してください' }),
-  password: z.string(),
+  password: z.string().min(1, 'パスワードは入力必須です'),
 });
 
 type SignInForm = z.infer<typeof signInSchema>;
@@ -18,36 +20,39 @@ type SignInForm = z.infer<typeof signInSchema>;
 export const SignIn: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
+  const actionData = useActionData<SignInError>();
+  const submit = useSubmit();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm<SignInForm>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit: SubmitHandler<SignInForm> = () => {
+  const onSubmit: SubmitHandler<SignInForm> = async (data) => {
     setIsLoading(true);
-    // submit(data, { method: 'post' });
+    await submit(data, { method: 'post' });
+    setIsLoading(false);
   };
 
   return (
     <MainContainer testId="sign-in-page">
       <AuthFormCard title="ログイン" onSubmit={handleSubmit(onSubmit)}>
-        <Fieldset.Root mb={6}>
+        <Fieldset.Root mb={6} invalid={actionData?.isError}>
           <Fieldset.Content>
             <Field.Root>
               <Field.Label>メールアドレス</Field.Label>
               <Input placeholder="example.example.com" type="email" {...register('email')} />
             </Field.Root>
-            <Field.Root invalid={!!errors.password?.message}>
+            <Field.Root>
               <Field.Label>パスワード</Field.Label>
               <Input placeholder="••••••••" type="password" {...register('password')} />
-              <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
             </Field.Root>
           </Fieldset.Content>
-          <Fieldset.ErrorText>ログインに失敗しました。</Fieldset.ErrorText>
+          <Fieldset.ErrorText fontSize="sm">{actionData?.message}</Fieldset.ErrorText>
         </Fieldset.Root>
 
         <PrimaryButton w="full" mb={4} type="submit" disabled={!isValid || isLoading} loading={isLoading}>
@@ -55,7 +60,7 @@ export const SignIn: FC = () => {
         </PrimaryButton>
         <Text fontSize="sm">
           アカウントをお持ちでない方は
-          <PrimaryLink to="/sign-up">新規登録</PrimaryLink>
+          <PrimaryLink to="/signup">新規登録</PrimaryLink>
         </Text>
       </AuthFormCard>
     </MainContainer>
