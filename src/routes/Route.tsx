@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect, RouterProvider } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 import { MainLayout } from '../components/layouts/MainLayout';
 import { TemplateDetail } from '../components/pages/TemplateDetail';
 import { Page404 } from '../components/pages/Page404';
@@ -11,6 +11,7 @@ import { signUpAction } from './actions/signUpAction';
 import { SignIn } from '@/components/pages/SignIn';
 import { signInAction } from './actions/signInAction';
 import { authLoader } from './loader/authClaimsLoader';
+import { guestOnlyLoader } from './loader/guestOnlyLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -37,11 +38,13 @@ export const PageRoute = () => {
         {
           path: 'signup',
           Component: SignUp,
+          loader: guestOnlyLoader,
           action: signUpAction,
         },
         {
           path: 'signin',
           Component: SignIn,
+          loader: guestOnlyLoader,
           action: signInAction,
         },
         {
