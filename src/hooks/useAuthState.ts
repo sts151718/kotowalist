@@ -3,28 +3,50 @@ import { supabase } from '@/lib/supabase/setup';
 import type { AuthClaims } from '@/lib/supabase/types/auth';
 import { useLoaderData } from 'react-router';
 import type { AuthLoaderData } from '@/routes/loader/authClaimsLoader';
+import { fetchUserByAuthId } from '@/lib/supabase/users';
+import { useAuthUserStore } from '@/store/useAuthUserStore';
 
 export const useAuthState = () => {
   const { claims } = useLoaderData<AuthLoaderData>();
+
   const [currentClaims, setCurrentClaims] = useState<AuthClaims | null>(claims);
   const [isAuthenticated, setIsAuthenticated] = useState(claims?.data !== null && claims?.error === null);
+
+  const setUser = useAuthUserStore((state) => state.setUser);
+  const unsetUser = useAuthUserStore((state) => state.unsetUser);
 
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       switch (event) {
         case 'INITIAL_SESSION':
         case 'SIGNED_IN':
         case 'TOKEN_REFRESHED': {
           const newClaims = await supabase.auth.getClaims();
           setCurrentClaims(newClaims);
-          setIsAuthenticated(newClaims.data !== null && newClaims.error === null);
+
+          const isLoggedIn = newClaims.data !== null && newClaims.error === null;
+          setIsAuthenticated(isLoggedIn);
+
+          if (!isLoggedIn || !session?.user.id) {
+            unsetUser();
+            break;
+          }
+
+          try {
+            const authUser = await fetchUserByAuthId(session.user.id);
+
+            setUser(authUser);
+          } catch {
+            unsetUser();
+          }
           break;
         }
         case 'SIGNED_OUT':
           setCurrentClaims(null);
           setIsAuthenticated(false);
+          unsetUser();
           break;
         default:
           break;
@@ -32,7 +54,7 @@ export const useAuthState = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [setUser, unsetUser]);
 
   return { currentClaims, isAuthenticated };
 };

@@ -8,10 +8,13 @@ import { HeaderTextButton } from '../atoms/button/HeaderTextButton';
 import { useAuthState } from '@/hooks/useAuthState';
 import { LuCirclePlus } from 'react-icons/lu';
 import { supabase } from '@/lib/supabase/setup';
+import { FaRegUser } from 'react-icons/fa';
+import { useAuthUserStore } from '@/store/useAuthUserStore';
 
 export const MainLayout: FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthState();
+  const authUser = useAuthUserStore((state) => state.user);
 
   const onClickSignup = () => {
     navigate('/signup');
@@ -45,6 +48,14 @@ export const MainLayout: FC = () => {
                     <LuCirclePlus />
                     新規投稿
                   </HeaderPrimaryButton>
+                </Box>
+                <Box as="li" display={{ base: 'none', md: 'block' }}>
+                  <Flex alignItems="center" h="full" gap={1} fontSize="xs">
+                    <Icon size="xs">
+                      <FaRegUser />
+                    </Icon>
+                    {authUser?.userName}
+                  </Flex>
                 </Box>
                 <Box as="li">
                   <HeaderTextButton onClick={onClickSignout}>

@@ -13,7 +13,7 @@ export const signInAction: ActionFunction<SignupActionReturn> = async ({ request
   const email = formData.get('email');
   const password = formData.get('password');
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email: typeof email === 'string' ? email : '',
     password: typeof password === 'string' ? password : '',
   });
