@@ -3,6 +3,9 @@ import { Top } from '@/components/pages/Top';
 import { createRoutesStub } from 'react-router';
 import { SignUp } from '@/components/pages/SignUp';
 import 'react-intersection-observer/test-utils';
+import { User } from '@/domain/User';
+import type { AuthClaims } from '@/lib/supabase/types/auth';
+import { AuthError } from '@supabase/supabase-js';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
 type StubRootRoute = StubRoutes[number];
@@ -32,7 +35,34 @@ export const createDefaultMainLayoutRoot = (): StubChildRoute[] => [
   },
 ];
 
-export const createMainLayoutStubRoot = (children: StubChildRoute[]): StubRootRoute => ({
+export const createMainLayoutStubRoot = (
+  children: StubChildRoute[],
+  authState: 'guest' | 'login' | 'error' = 'guest'
+): StubRootRoute => ({
   Component: MainLayout,
+  loader: async () => {
+    const claimsByState = {
+      guest: {
+        data: null,
+        error: null,
+      } as AuthClaims,
+      login: {
+        data: {
+          claims: {
+            sub: 'test-auth-id',
+          },
+        },
+        error: null,
+      } as AuthClaims,
+      error: {
+        data: null,
+        error: new AuthError('mock signin error'),
+      } as AuthClaims,
+    };
+
+    const claims = claimsByState[authState];
+    const authUser = authState === 'login' ? new User(1, 'test_user') : null;
+    return { claims, authUser };
+  },
   children,
 });

@@ -22,15 +22,17 @@ const renderSignupPage = (action: ActionFunction = async () => ({})) => {
 };
 
 const inputValidForm = async () => {
+  const signupPage = await screen.findByTestId('sign-up-page');
+
   const user = userEvent.setup();
 
-  await user.type(screen.getByRole('textbox', { name: 'ユーザー名' }), 'valid_user');
+  await user.type(within(signupPage).getByRole('textbox', { name: 'ユーザー名' }), 'valid_user');
   await user.tab();
-  await user.type(screen.getByRole('textbox', { name: 'メールアドレス' }), 'valid@example.com');
+  await user.type(within(signupPage).getByRole('textbox', { name: 'メールアドレス' }), 'valid@example.com');
   await user.tab();
-  await user.type(screen.getByLabelText('パスワード'), 'password123');
+  await user.type(within(signupPage).getByLabelText('パスワード'), 'password123');
   await user.tab();
-  await user.type(screen.getByLabelText('パスワード（確認）'), 'password123');
+  await user.type(within(signupPage).getByLabelText('パスワード（確認）'), 'password123');
   await user.tab();
 };
 
@@ -46,7 +48,7 @@ describe('新規登録ページのテスト', () => {
 
   it('ヘッダーロゴが表示されていること', async () => {
     renderSignupPage();
-    const header = screen.getByRole('banner');
+    const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
     expect(headerLogo).toBeVisible();
@@ -54,7 +56,8 @@ describe('新規登録ページのテスト', () => {
 
   it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
     renderSignupPage();
-    const header = screen.getByRole('banner');
+
+    const header = await screen.findByRole('banner');
     const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
 
     const user = userEvent.setup();
@@ -68,7 +71,8 @@ describe('新規登録ページのテスト', () => {
 
   it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
     renderSignupPage();
-    const header = screen.getByRole('banner');
+
+    const header = await screen.findByRole('banner');
     const signupButton = within(header).getByRole('button', { name: '新規登録' });
 
     const user = userEvent.setup();
@@ -85,7 +89,7 @@ describe('新規登録ページのテスト', () => {
   it('ページタイトルが表示されていること', async () => {
     renderSignupPage();
 
-    const pageTitle = screen.getByRole('heading', { level: 2, name: '新規登録' });
+    const pageTitle = await screen.findByRole('heading', { level: 2, name: '新規登録' });
 
     expect(pageTitle).toBeVisible();
   });
@@ -93,7 +97,7 @@ describe('新規登録ページのテスト', () => {
   it('各入力欄が表示されていること', async () => {
     renderSignupPage();
 
-    const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
+    const userName = await screen.findByRole('textbox', { name: 'ユーザー名' });
     const email = screen.getByRole('textbox', { name: 'メールアドレス' });
     const password = screen.getByLabelText('パスワード');
     const passwordConfirm = screen.getByLabelText('パスワード（確認）');
@@ -107,7 +111,7 @@ describe('新規登録ページのテスト', () => {
   it('新規登録ボタンが非活性状態で表示されていること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
 
     expect(submitButton).toBeVisible();
@@ -117,7 +121,7 @@ describe('新規登録ページのテスト', () => {
   it('ログインリンクが表示されていること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const loginLink = within(signupPage).getByRole('link', { name: 'ログイン' });
 
     expect(loginLink).toBeVisible();
@@ -127,7 +131,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
+    const userName = await screen.findByRole('textbox', { name: 'ユーザー名' });
 
     await user.type(userName, 'ab');
     await user.tab();
@@ -141,7 +145,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const email = screen.getByRole('textbox', { name: 'メールアドレス' });
+    const email = await screen.findByRole('textbox', { name: 'メールアドレス' });
 
     await user.type(email, 'invalid-email');
     await user.tab();
@@ -155,7 +159,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
     await user.type(password, 'a12345678');
     await user.tab();
 
@@ -168,7 +172,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
 
     await user.type(password, 'password12(');
     await user.tab();
@@ -180,11 +184,11 @@ describe('新規登録ページのテスト', () => {
 
   it('確認パスワードが一致しないときにエラーメッセージが表示されること', async () => {
     renderSignupPage();
-    const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
     const passwordConfirm = screen.getByLabelText('パスワード（確認）');
 
+    const user = userEvent.setup();
     await user.type(password, 'password123');
     await user.tab();
     await user.type(passwordConfirm, 'password999');
@@ -213,7 +217,7 @@ describe('新規登録ページのテスト', () => {
   it('有効な入力値を入れると新規登録ボタンが活性になること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
 
     await inputValidForm();
@@ -224,13 +228,15 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('登録ボタンクリック後、エラーがあった場合、エラーメッセージが表示されること', async () => {
-    const action = vi.fn(async () => ({ signupError: true as const }));
+    const action = vi.fn(async () => ({ isError: true }));
     renderSignupPage(action);
 
     await inputValidForm();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
+
+    expect(submitButton).toBeEnabled();
     await userEvent.click(submitButton);
 
     const errorMsg = await screen.findByText('ユーザーの登録に失敗しました。');
@@ -250,7 +256,7 @@ describe('新規登録ページのテスト', () => {
 
     await inputValidForm();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
     await userEvent.click(submitButton);
 
