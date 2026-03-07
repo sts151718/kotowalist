@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/setup';
-import type { AuthClaims } from '@/lib/supabase/types/auth';
 import { useLoaderData } from 'react-router';
 import type { AuthLoaderData } from '@/routes/loader/authLoader';
 import { fetchUserByAuthId } from '@/lib/supabase/users';
 import { useAuthUserStore } from '@/store/useAuthUserStore';
 
+const checkAuthenticated = (claims: AuthLoaderData['claims']) => claims?.data !== null && claims?.error === null;
+
 export const useAuthState = () => {
   const { claims, authUser: initialAuthUser } = useLoaderData<AuthLoaderData>();
-
-  const [currentClaims, setCurrentClaims] = useState<AuthClaims | null>(claims);
-  const [isAuthenticated, setIsAuthenticated] = useState(claims?.data !== null && claims?.error === null);
+  const [isAuthenticated, setIsAuthenticated] = useState(checkAuthenticated(claims));
 
   const storeAuthUser = useAuthUserStore((state) => state.user);
   const setUser = useAuthUserStore((state) => state.setUser);
@@ -29,12 +28,11 @@ export const useAuthState = () => {
         case 'SIGNED_IN':
         case 'TOKEN_REFRESHED': {
           const newClaims = await supabase.auth.getClaims();
-          setCurrentClaims(newClaims);
 
-          const isLoggedIn = newClaims.data !== null && newClaims.error === null;
-          setIsAuthenticated(isLoggedIn);
+          const isNewAuthenticated = checkAuthenticated(newClaims);
+          setIsAuthenticated(isNewAuthenticated);
 
-          if (!isLoggedIn || !session?.user.id) {
+          if (!isNewAuthenticated || !session?.user.id) {
             unsetUser();
             break;
           }
@@ -48,7 +46,6 @@ export const useAuthState = () => {
           break;
         }
         case 'SIGNED_OUT':
-          setCurrentClaims(null);
           setIsAuthenticated(false);
           unsetUser();
           break;
@@ -60,5 +57,5 @@ export const useAuthState = () => {
     return () => subscription.unsubscribe();
   }, [setUser, unsetUser]);
 
-  return { currentClaims, isAuthenticated, authUser: storeAuthUser ?? initialAuthUser };
+  return { isAuthenticated, authUser: storeAuthUser ?? initialAuthUser };
 };
