@@ -2,18 +2,23 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/setup';
 import type { AuthClaims } from '@/lib/supabase/types/auth';
 import { useLoaderData } from 'react-router';
-import type { AuthLoaderData } from '@/routes/loader/authClaimsLoader';
+import type { AuthLoaderData } from '@/routes/loader/authLoader';
 import { fetchUserByAuthId } from '@/lib/supabase/users';
 import { useAuthUserStore } from '@/store/useAuthUserStore';
 
 export const useAuthState = () => {
-  const { claims } = useLoaderData<AuthLoaderData>();
+  const { claims, authUser: initialAuthUser } = useLoaderData<AuthLoaderData>();
 
   const [currentClaims, setCurrentClaims] = useState<AuthClaims | null>(claims);
   const [isAuthenticated, setIsAuthenticated] = useState(claims?.data !== null && claims?.error === null);
 
+  const storeAuthUser = useAuthUserStore((state) => state.user);
   const setUser = useAuthUserStore((state) => state.setUser);
   const unsetUser = useAuthUserStore((state) => state.unsetUser);
+
+  useEffect(() => {
+    setUser(initialAuthUser);
+  }, [initialAuthUser, setUser]);
 
   useEffect(() => {
     const {
@@ -36,7 +41,6 @@ export const useAuthState = () => {
 
           try {
             const authUser = await fetchUserByAuthId(session.user.id);
-
             setUser(authUser);
           } catch {
             unsetUser();
@@ -56,5 +60,5 @@ export const useAuthState = () => {
     return () => subscription.unsubscribe();
   }, [setUser, unsetUser]);
 
-  return { currentClaims, isAuthenticated };
+  return { currentClaims, isAuthenticated, authUser: storeAuthUser ?? initialAuthUser };
 };

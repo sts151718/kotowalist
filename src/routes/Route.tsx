@@ -10,7 +10,7 @@ import { SignUp } from '@/components/pages/SignUp';
 import { signUpAction } from './actions/signUpAction';
 import { SignIn } from '@/components/pages/SignIn';
 import { signInAction } from './actions/signInAction';
-import { authLoader } from './loader/authClaimsLoader';
+import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
 
 export const PageRoute = () => {

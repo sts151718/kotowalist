@@ -9,12 +9,10 @@ import { useAuthState } from '@/hooks/useAuthState';
 import { LuCirclePlus } from 'react-icons/lu';
 import { supabase } from '@/lib/supabase/setup';
 import { FaRegUser } from 'react-icons/fa';
-import { useAuthUserStore } from '@/store/useAuthUserStore';
 
 export const MainLayout: FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthState();
-  const authUser = useAuthUserStore((state) => state.user);
+  const { isAuthenticated, authUser } = useAuthState();
 
   const onClickSignup = () => {
     navigate('/signup');
