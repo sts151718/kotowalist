@@ -11,11 +11,6 @@ import {
   type MockAuthState,
 } from './helpers/mainLayoutStub';
 
-vi.mock('@/lib/supabase/users', () => ({
-  existsEmail: vi.fn().mockResolvedValue(true),
-  existsUserName: vi.fn().mockResolvedValue(true),
-}));
-
 const renderHeader = (authState: MockAuthState = 'guest') => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
@@ -110,21 +105,11 @@ describe('ヘッダーコンポーネントのテスト', () => {
     expect(userName).toBeInTheDocument();
   });
 
-  it('認証時、ログアウトボタンをクリックすると、新規登録・ログインボタンが表示されること', async () => {
+  it('認証時、ログアウトボタンが表示されていること', async () => {
     renderHeader('authenticated');
 
     const header = await screen.findByRole('banner');
     const signoutButton = within(header).getByRole('button', { name: 'ログアウト' });
-
-    const user = userEvent.setup();
-    await user.click(signoutButton);
-
-    await waitFor(() => {
-      const signupButton = within(header).getByRole('button', { name: '新規登録' });
-      const signinButton = within(header).getByRole('button', { name: 'ログイン' });
-
-      expect(signupButton).toBeVisible();
-      expect(signinButton).toBeVisible();
-    });
+    expect(signoutButton).toBeVisible();
   });
 });

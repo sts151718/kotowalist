@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/setup';
+import { fetchClaims, onAuthStateChange } from '@/lib/supabase/auth';
 import { useLoaderData } from 'react-router';
 import type { AuthLoaderData } from '@/routes/loader/authLoader';
 import { fetchUserByAuthId } from '@/lib/supabase/users';
@@ -22,12 +22,12 @@ export const useAuthState = () => {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = onAuthStateChange(async (event, session) => {
       switch (event) {
         case 'INITIAL_SESSION':
         case 'SIGNED_IN':
         case 'TOKEN_REFRESHED': {
-          const newClaims = await supabase.auth.getClaims();
+          const newClaims = await fetchClaims();
 
           const isNewAuthenticated = checkAuthenticated(newClaims);
           setIsAuthenticated(isNewAuthenticated);

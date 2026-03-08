@@ -3,7 +3,7 @@ import { type FC } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { Header } from './Header';
 import { useAuthState } from '@/hooks/useAuthState';
-import { supabase } from '@/lib/supabase/setup';
+import { signOut } from '@/lib/supabase/auth';
 
 export const MainLayout: FC = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export const MainLayout: FC = () => {
   };
 
   const onClickSignout = () => {
-    supabase.auth.signOut({ scope: 'local' });
+    signOut();
   };
 
   return (

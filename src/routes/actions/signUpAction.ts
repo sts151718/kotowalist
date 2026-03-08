@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase/setup';
+import { signUp } from '@/lib/supabase/auth';
 import { redirect, type ActionFunction, type ActionFunctionArgs } from 'react-router';
 
 export type SignUpError = {
@@ -13,7 +13,7 @@ export const signUpAction: ActionFunction<SignupActionReturn> = async ({ request
   const password = formData.get('password');
   const user_name = formData.get('user_name');
 
-  const { error } = await supabase.auth.signUp({
+  const { error } = await signUp({
     email: typeof email === 'string' ? email : '',
     password: typeof password === 'string' ? password : '',
     options: {

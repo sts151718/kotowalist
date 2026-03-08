@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase/setup';
+import { fetchClaims } from '@/lib/supabase/auth';
 import { redirect } from 'react-router';
 
 export const guestOnlyLoader = async () => {
-  const claims = await supabase.auth.getClaims();
+  const claims = await fetchClaims();
   const isAuthenticated = claims.data !== null && claims.error === null;
 
   if (isAuthenticated) {

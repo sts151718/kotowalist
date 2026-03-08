@@ -8,7 +8,7 @@ import type { AuthClaims } from '@/lib/supabase/types/auth';
 import { AuthError } from '@supabase/supabase-js';
 import { SignIn } from '@/components/pages/SignIn';
 import { guestOnlyLoader } from '@/routes/loader/guestOnlyLoader';
-import { supabase } from '@/lib/supabase/setup';
+import { fetchClaims } from '@/lib/supabase/auth';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
 type StubRootRoute = StubRoutes[number];
@@ -18,6 +18,23 @@ export type MockAuthState = 'guest' | 'authenticated' | 'error';
 vi.mock('@/lib/supabase/users', () => ({
   existsEmail: vi.fn().mockResolvedValue(true),
   existsUserName: vi.fn().mockResolvedValue(true),
+}));
+
+vi.mock('@/lib/supabase/auth', () => ({
+  fetchClaims: vi.fn().mockResolvedValue({
+    data: null,
+    error: null,
+  }),
+  onAuthStateChange: vi.fn(() => ({
+    data: {
+      subscription: {
+        unsubscribe: vi.fn(),
+      },
+    },
+  })),
+  signIn: vi.fn(),
+  signUp: vi.fn(),
+  signOut: vi.fn(),
 }));
 
 const claimsByState: Record<MockAuthState, AuthClaims> = {
@@ -71,7 +88,7 @@ export const createMainLayoutStubRoot = (
   authState: MockAuthState = 'guest'
 ): StubRootRoute => {
   const claims = claimsByState[authState];
-  vi.spyOn(supabase.auth, 'getClaims').mockResolvedValue(claims);
+  vi.mocked(fetchClaims).mockResolvedValue(claims);
 
   return {
     Component: MainLayout,

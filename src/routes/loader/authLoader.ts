@@ -1,6 +1,6 @@
 import type { AuthClaims } from '@/lib/supabase/types/auth';
 import type { User } from '@/domain/User';
-import { supabase } from '@/lib/supabase/setup';
+import { fetchClaims } from '@/lib/supabase/auth';
 import { fetchUserByAuthId } from '@/lib/supabase/users';
 
 export type AuthLoaderData = {
@@ -9,7 +9,7 @@ export type AuthLoaderData = {
 };
 
 export const authLoader = async (): Promise<AuthLoaderData> => {
-  const claims = await supabase.auth.getClaims();
+  const claims = await fetchClaims();
   const authId = claims.data?.claims?.sub;
 
   if (!authId) {
