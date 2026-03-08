@@ -8,11 +8,16 @@ import { topLoader } from './loader/topLoader';
 import { templateDetailLoader } from './loader/templateDetailLoader';
 import { SignUp } from '@/components/pages/SignUp';
 import { signUpAction } from './actions/signUpAction';
+import { SignIn } from '@/components/pages/SignIn';
+import { signInAction } from './actions/signInAction';
+import { authLoader } from './loader/authLoader';
+import { guestOnlyLoader } from './loader/guestOnlyLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
     {
       Component: MainLayout,
+      loader: authLoader,
       children: [
         {
           path: '/',
@@ -21,7 +26,6 @@ export const PageRoute = () => {
           loader: topLoader,
         },
         {
-          // 一覧読み込み用のルーティング
           path: 'resources/posts',
           loader: postListLoader,
         },
@@ -34,7 +38,14 @@ export const PageRoute = () => {
         {
           path: 'signup',
           Component: SignUp,
+          loader: guestOnlyLoader,
           action: signUpAction,
+        },
+        {
+          path: 'signin',
+          Component: SignIn,
+          loader: guestOnlyLoader,
+          action: signInAction,
         },
         {
           path: '*',

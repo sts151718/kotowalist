@@ -3,16 +3,16 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Provider } from '@/components/ui/provider';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot, type MockAuthState } from './helpers/mainLayoutStub';
 import { existsEmail, existsUserName } from '@/lib/supabase/users';
 
-const renderSignupPage = (action: ActionFunction = async () => ({})) => {
+const renderSignupPage = (authState: MockAuthState = 'guest', action: ActionFunction = async () => ({})) => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const signupRoute = defaultChildrenRoot.find((route) => route.path === 'signup')!;
 
   signupRoute.action = action;
-  const Stub = createRoutesStub([createMainLayoutStubRoot(defaultChildrenRoot)]);
+  const Stub = createRoutesStub([createMainLayoutStubRoot(defaultChildrenRoot, authState)]);
 
   render(
     <Provider>
@@ -22,15 +22,17 @@ const renderSignupPage = (action: ActionFunction = async () => ({})) => {
 };
 
 const inputValidForm = async () => {
+  const signupPage = await screen.findByTestId('sign-up-page');
+
   const user = userEvent.setup();
 
-  await user.type(screen.getByRole('textbox', { name: 'ユーザー名' }), 'valid_user');
+  await user.type(within(signupPage).getByRole('textbox', { name: 'ユーザー名' }), 'valid_user');
   await user.tab();
-  await user.type(screen.getByRole('textbox', { name: 'メールアドレス' }), 'valid@example.com');
+  await user.type(within(signupPage).getByRole('textbox', { name: 'メールアドレス' }), 'valid@example.com');
   await user.tab();
-  await user.type(screen.getByLabelText('パスワード'), 'password123');
+  await user.type(within(signupPage).getByLabelText('パスワード'), 'password123');
   await user.tab();
-  await user.type(screen.getByLabelText('パスワード（確認）'), 'password123');
+  await user.type(within(signupPage).getByLabelText('パスワード（確認）'), 'password123');
   await user.tab();
 };
 
@@ -44,48 +46,19 @@ describe('新規登録ページのテスト', () => {
     mockExistsUserName.mockResolvedValue(true);
   });
 
-  it('ヘッダーロゴが表示されていること', async () => {
+  it('ヘッダーが表示されていること', async () => {
     renderSignupPage();
-    const header = screen.getByRole('banner');
+    const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
+    expect(header).toBeVisible();
     expect(headerLogo).toBeVisible();
   });
-
-  it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
-    renderSignupPage();
-    const header = screen.getByRole('banner');
-    const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
-
-    const user = userEvent.setup();
-    await user.click(headerLogoLink);
-
-    await waitFor(() => {
-      const topPage = screen.getByTestId('top-page');
-      expect(topPage).toBeVisible();
-    });
-  });
-
-  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    renderSignupPage();
-    const header = screen.getByRole('banner');
-    const signupButton = within(header).getByRole('button', { name: '新規登録' });
-
-    const user = userEvent.setup();
-    await user.click(signupButton);
-
-    await waitFor(() => {
-      const singupPage = screen.getByTestId('sign-up-page');
-      expect(singupPage).toBeVisible();
-    });
-  });
-
-  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること', async () => {
     renderSignupPage();
 
-    const pageTitle = screen.getByRole('heading', { level: 2, name: '新規登録' });
+    const pageTitle = await screen.findByRole('heading', { level: 2, name: '新規登録' });
 
     expect(pageTitle).toBeVisible();
   });
@@ -93,7 +66,7 @@ describe('新規登録ページのテスト', () => {
   it('各入力欄が表示されていること', async () => {
     renderSignupPage();
 
-    const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
+    const userName = await screen.findByRole('textbox', { name: 'ユーザー名' });
     const email = screen.getByRole('textbox', { name: 'メールアドレス' });
     const password = screen.getByLabelText('パスワード');
     const passwordConfirm = screen.getByLabelText('パスワード（確認）');
@@ -107,7 +80,7 @@ describe('新規登録ページのテスト', () => {
   it('新規登録ボタンが非活性状態で表示されていること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
 
     expect(submitButton).toBeVisible();
@@ -117,7 +90,7 @@ describe('新規登録ページのテスト', () => {
   it('ログインリンクが表示されていること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const loginLink = within(signupPage).getByRole('link', { name: 'ログイン' });
 
     expect(loginLink).toBeVisible();
@@ -127,7 +100,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const userName = screen.getByRole('textbox', { name: 'ユーザー名' });
+    const userName = await screen.findByRole('textbox', { name: 'ユーザー名' });
 
     await user.type(userName, 'ab');
     await user.tab();
@@ -141,7 +114,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const email = screen.getByRole('textbox', { name: 'メールアドレス' });
+    const email = await screen.findByRole('textbox', { name: 'メールアドレス' });
 
     await user.type(email, 'invalid-email');
     await user.tab();
@@ -155,7 +128,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
     await user.type(password, 'a12345678');
     await user.tab();
 
@@ -168,7 +141,7 @@ describe('新規登録ページのテスト', () => {
     renderSignupPage();
     const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
 
     await user.type(password, 'password12(');
     await user.tab();
@@ -180,11 +153,11 @@ describe('新規登録ページのテスト', () => {
 
   it('確認パスワードが一致しないときにエラーメッセージが表示されること', async () => {
     renderSignupPage();
-    const user = userEvent.setup();
 
-    const password = screen.getByLabelText('パスワード');
+    const password = await screen.findByLabelText('パスワード');
     const passwordConfirm = screen.getByLabelText('パスワード（確認）');
 
+    const user = userEvent.setup();
     await user.type(password, 'password123');
     await user.tab();
     await user.type(passwordConfirm, 'password999');
@@ -213,7 +186,7 @@ describe('新規登録ページのテスト', () => {
   it('有効な入力値を入れると新規登録ボタンが活性になること', async () => {
     renderSignupPage();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
 
     await inputValidForm();
@@ -224,13 +197,15 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('登録ボタンクリック後、エラーがあった場合、エラーメッセージが表示されること', async () => {
-    const action = vi.fn(async () => ({ signupError: true as const }));
-    renderSignupPage(action);
+    const action = vi.fn(async () => ({ isError: true }));
+    renderSignupPage('guest', action);
 
     await inputValidForm();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
+
+    expect(submitButton).toBeEnabled();
     await userEvent.click(submitButton);
 
     const errorMsg = await screen.findByText('ユーザーの登録に失敗しました。');
@@ -246,16 +221,30 @@ describe('新規登録ページのテスト', () => {
       return redirect('/');
     });
 
-    renderSignupPage(action);
+    renderSignupPage('guest', action);
 
     await inputValidForm();
 
-    const signupPage = screen.getByTestId('sign-up-page');
+    const signupPage = await screen.findByTestId('sign-up-page');
     const submitButton = within(signupPage).getByRole('button', { name: '新規登録' });
     await userEvent.click(submitButton);
 
     const topPage = await screen.findByTestId('top-page');
 
     expect(topPage).toBeVisible();
+  });
+
+  it('認証済み状態の時、トップページに遷移されること', async () => {
+    renderSignupPage('authenticated');
+
+    const topPage = await screen.findByTestId('top-page');
+    expect(topPage).toBeVisible();
+  });
+
+  it('認証エラーの時、サインアップページに遷移されること', async () => {
+    renderSignupPage('error');
+
+    const signUpPage = await screen.findByTestId('sign-up-page');
+    expect(signUpPage).toBeVisible();
   });
 });

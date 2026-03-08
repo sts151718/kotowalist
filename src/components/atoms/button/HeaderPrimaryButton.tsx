@@ -6,7 +6,7 @@ type Props = {
   onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export const HeaderNavButton: FC<Props> = (props) => {
+export const HeaderPrimaryButton: FC<Props> = (props) => {
   const { children, onClick } = props;
 
   return (

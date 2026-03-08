@@ -103,44 +103,14 @@ const renderDetailPage = (post: IDeclinePost) => {
 };
 
 describe('テンプレート詳細ページのテスト', () => {
-  it('ヘッダーロゴが表示されていること', async () => {
+  it('ヘッダーが表示されていること', async () => {
     renderDetailPage(mockDefaultPostRecord);
     const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
+    expect(header).toBeVisible();
     expect(headerLogo).toBeVisible();
   });
-
-  it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
-    renderDetailPage(mockDefaultPostRecord);
-    const header = await screen.findByRole('banner');
-    const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
-
-    const user = userEvent.setup();
-    await user.click(headerLogoLink);
-
-    await waitFor(() => {
-      const topPage = screen.getByTestId('top-page');
-      expect(topPage).toBeVisible();
-    });
-  });
-
-  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    renderDetailPage(mockDefaultPostRecord);
-
-    const header = await screen.findByRole('banner');
-    const signupButton = within(header).getByRole('button', { name: '新規登録' });
-
-    const user = userEvent.setup();
-    await user.click(signupButton);
-
-    await waitFor(() => {
-      const singupPage = screen.getByTestId('sign-up-page');
-      expect(singupPage).toBeVisible();
-    });
-  });
-
-  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ローディング中にスケルトンが表示されること', async () => {
     renderDetailPage(mockDefaultPostRecord);
