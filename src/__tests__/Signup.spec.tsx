@@ -3,16 +3,16 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Provider } from '@/components/ui/provider';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot, type MockAuthState } from './helpers/mainLayoutStub';
 import { existsEmail, existsUserName } from '@/lib/supabase/users';
 
-const renderSignupPage = (action: ActionFunction = async () => ({})) => {
+const renderSignupPage = (authState: MockAuthState = 'guest', action: ActionFunction = async () => ({})) => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const signupRoute = defaultChildrenRoot.find((route) => route.path === 'signup')!;
 
   signupRoute.action = action;
-  const Stub = createRoutesStub([createMainLayoutStubRoot(defaultChildrenRoot)]);
+  const Stub = createRoutesStub([createMainLayoutStubRoot(defaultChildrenRoot, authState)]);
 
   render(
     <Provider>
@@ -198,7 +198,7 @@ describe('新規登録ページのテスト', () => {
 
   it('登録ボタンクリック後、エラーがあった場合、エラーメッセージが表示されること', async () => {
     const action = vi.fn(async () => ({ isError: true }));
-    renderSignupPage(action);
+    renderSignupPage('guest', action);
 
     await inputValidForm();
 
@@ -221,7 +221,7 @@ describe('新規登録ページのテスト', () => {
       return redirect('/');
     });
 
-    renderSignupPage(action);
+    renderSignupPage('guest', action);
 
     await inputValidForm();
 
@@ -232,5 +232,19 @@ describe('新規登録ページのテスト', () => {
     const topPage = await screen.findByTestId('top-page');
 
     expect(topPage).toBeVisible();
+  });
+
+  it('認証済み状態の時、トップページに遷移されること', async () => {
+    renderSignupPage('authenticated');
+
+    const topPage = await screen.findByTestId('top-page');
+    expect(topPage).toBeVisible();
+  });
+
+  it('認証エラーの時、サインアップページに遷移されること', async () => {
+    renderSignupPage('error');
+
+    const signUpPage = await screen.findByTestId('sign-up-page');
+    expect(signUpPage).toBeVisible();
   });
 });

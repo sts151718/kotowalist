@@ -4,7 +4,12 @@ import userEvent from '@testing-library/user-event';
 import { Provider } from '@/components/ui/provider';
 import { createRoutesStub } from 'react-router';
 import 'react-intersection-observer/test-utils';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot, type MockAuthState } from './helpers/mainLayoutStub';
+import {
+  createDefaultMainLayoutRoot,
+  createMainLayoutStubRoot,
+  stubAuthenticatedUser,
+  type MockAuthState,
+} from './helpers/mainLayoutStub';
 
 vi.mock('@/lib/supabase/users', () => ({
   existsEmail: vi.fn().mockResolvedValue(true),
@@ -67,6 +72,59 @@ describe('ヘッダーコンポーネントのテスト', () => {
     await waitFor(() => {
       const signupPage = screen.getByTestId('sign-up-page');
       expect(signupPage).toBeVisible();
+    });
+  });
+
+  it('未認証時、サインインページに遷移できること', async () => {
+    renderHeader();
+
+    const header = await screen.findByRole('banner');
+    const signinButton = within(header).getByRole('button', { name: 'ログイン' });
+
+    const user = userEvent.setup();
+    await user.click(signinButton);
+
+    await waitFor(() => {
+      const signinPage = screen.getByTestId('sign-in-page');
+      expect(signinPage).toBeVisible();
+    });
+  });
+
+  it.skip('認証時、新規投稿ページに遷移できること', async () => {
+    renderHeader('authenticated');
+
+    const header = await screen.findByRole('banner');
+    const registerButton = within(header).getByRole('button', { name: '新規投稿' });
+
+    const user = userEvent.setup();
+    await user.click(registerButton);
+  });
+
+  it('認証時、ログインユーザー名が描画されていること', async () => {
+    renderHeader('authenticated');
+
+    const header = await screen.findByRole('banner');
+
+    const userName = await within(header).findByText(stubAuthenticatedUser.userName);
+
+    expect(userName).toBeInTheDocument();
+  });
+
+  it('認証時、ログアウトボタンをクリックすると、新規登録・ログインボタンが表示されること', async () => {
+    renderHeader('authenticated');
+
+    const header = await screen.findByRole('banner');
+    const signoutButton = within(header).getByRole('button', { name: 'ログアウト' });
+
+    const user = userEvent.setup();
+    await user.click(signoutButton);
+
+    await waitFor(() => {
+      const signupButton = within(header).getByRole('button', { name: '新規登録' });
+      const signinButton = within(header).getByRole('button', { name: 'ログイン' });
+
+      expect(signupButton).toBeVisible();
+      expect(signinButton).toBeVisible();
     });
   });
 });

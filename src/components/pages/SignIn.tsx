@@ -11,7 +11,7 @@ import { useActionData, useSubmit } from 'react-router';
 import type { SignInError } from '@/routes/actions/signInAction';
 
 const signInSchema = z.object({
-  email: z.email({ message: '有効なメールアドレスを入力してください' }),
+  email: z.string().min(1, 'メールアドレスは入力必須です'),
   password: z.string().min(1, 'パスワードは入力必須です'),
 });
 
