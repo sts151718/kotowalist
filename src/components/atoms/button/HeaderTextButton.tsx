@@ -1,4 +1,4 @@
-import { Button, Flex } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import type { FC, MouseEventHandler, ReactNode } from 'react';
 
 type Props = {
