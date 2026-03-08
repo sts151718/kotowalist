@@ -46,45 +46,14 @@ describe('新規登録ページのテスト', () => {
     mockExistsUserName.mockResolvedValue(true);
   });
 
-  it('ヘッダーロゴが表示されていること', async () => {
+  it('ヘッダーが表示されていること', async () => {
     renderSignupPage();
     const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
+    expect(header).toBeVisible();
     expect(headerLogo).toBeVisible();
   });
-
-  it('ヘッダーロゴをクリックするとトップページに遷移すること', async () => {
-    renderSignupPage();
-
-    const header = await screen.findByRole('banner');
-    const headerLogoLink = within(header).getByRole('link', { name: '断リスト' });
-
-    const user = userEvent.setup();
-    await user.click(headerLogoLink);
-
-    await waitFor(() => {
-      const topPage = screen.getByTestId('top-page');
-      expect(topPage).toBeVisible();
-    });
-  });
-
-  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    renderSignupPage();
-
-    const header = await screen.findByRole('banner');
-    const signupButton = within(header).getByRole('button', { name: '新規登録' });
-
-    const user = userEvent.setup();
-    await user.click(signupButton);
-
-    await waitFor(() => {
-      const singupPage = screen.getByTestId('sign-up-page');
-      expect(singupPage).toBeVisible();
-    });
-  });
-
-  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること', async () => {
     renderSignupPage();

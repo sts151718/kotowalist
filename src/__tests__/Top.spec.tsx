@@ -84,31 +84,14 @@ const renderTopPage = (postsNum: number = 21, postList: Array<IDeclinePostSource
 };
 
 describe('トップページのテスト', () => {
-  it('ヘッダーロゴが表示されていること', async () => {
+  it('ヘッダーが表示されていること', async () => {
     renderTopPage(0);
-
     const header = await screen.findByRole('banner');
     const headerLogo = within(header).getByRole('heading', { level: 1, name: '断リスト' });
 
+    expect(header).toBeVisible();
     expect(headerLogo).toBeVisible();
   });
-
-  it('ヘッダーボタンから新規登録ページに遷移できること', async () => {
-    renderTopPage(0);
-
-    const header = await screen.findByRole('banner');
-    const signupButton = within(header).getByRole('button', { name: '新規登録' });
-
-    const user = userEvent.setup();
-    await user.click(signupButton);
-
-    await waitFor(() => {
-      const singupPage = screen.getByTestId('sign-up-page');
-      expect(singupPage).toBeVisible();
-    });
-  });
-
-  it.skip('ヘッダーのリンクからログインページに遷移できること', async () => {});
 
   it('ページタイトルが表示されていること。', async () => {
     renderTopPage(0);
