@@ -12,6 +12,7 @@ import { SignIn } from '@/components/pages/SignIn';
 import { signInAction } from './actions/signInAction';
 import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
+import { TemplateCreate } from '@/components/pages/TemplateCreate';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -34,6 +35,10 @@ export const PageRoute = () => {
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
           loader: templateDetailLoader,
+        },
+        {
+          path: 'templates/create',
+          Component: TemplateCreate,
         },
         {
           path: 'signup',
