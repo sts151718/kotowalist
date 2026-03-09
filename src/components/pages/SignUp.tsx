@@ -1,4 +1,4 @@
-import { Field, Fieldset, Input, Text } from '@chakra-ui/react';
+import { Fieldset, Input, Text } from '@chakra-ui/react';
 import { useState, type FC } from 'react';
 import { useActionData, useSubmit } from 'react-router';
 import type { SignUpError } from '@/routes/actions/signUpAction';
@@ -10,6 +10,7 @@ import { MainContainer } from '../atoms/layout/MainContainer';
 import { PrimaryButton } from '../atoms/button/PrimaryButton';
 import { PrimaryLink } from '../atoms/link/PrimaryLink';
 import { AuthFormCard } from '../organisms/AuthFormCard';
+import { FormField } from '../molecules/form/FormField';
 
 const signUpSchema = z
   .object({
@@ -64,28 +65,32 @@ export const SignUp: FC = () => {
       <AuthFormCard title="新規登録" onSubmit={handleSubmit(onSubmit)}>
         <Fieldset.Root mb={6} invalid={actionData?.isError}>
           <Fieldset.Content>
-            <Field.Root invalid={!!errors.user_name?.message}>
-              <Field.Label>ユーザー名</Field.Label>
+            <FormField
+              label="ユーザー名"
+              invalid={!!errors.user_name?.message}
+              helperText="3〜20文字（英数字と_が使用可能）"
+              errorText={errors.user_name?.message}
+            >
               <Input placeholder="user_name" {...register('user_name')} />
-              <Field.HelperText>3〜20文字（英数字と_が使用可能）</Field.HelperText>
-              <Field.ErrorText>{errors.user_name?.message}</Field.ErrorText>
-            </Field.Root>
-            <Field.Root invalid={!!errors.email?.message}>
-              <Field.Label>メールアドレス</Field.Label>
+            </FormField>
+            <FormField label="メールアドレス" invalid={!!errors.email?.message} errorText={errors.email?.message}>
               <Input placeholder="example.example.com" type="email" {...register('email')} />
-              <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
-            </Field.Root>
-            <Field.Root invalid={!!errors.password?.message}>
-              <Field.Label>パスワード</Field.Label>
+            </FormField>
+            <FormField
+              label="パスワード"
+              invalid={!!errors.password?.message}
+              helperText="10〜50文字（英数字と!@#$%^&*-_が使用可能）"
+              errorText={errors.password?.message}
+            >
               <Input placeholder="••••••••" type="password" {...register('password')} />
-              <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
-              <Field.HelperText>10〜50文字（英数字と!@#$%^&*-_が使用可能）</Field.HelperText>
-            </Field.Root>
-            <Field.Root invalid={!!errors.password_confirm?.message}>
-              <Field.Label>パスワード（確認） </Field.Label>
+            </FormField>
+            <FormField
+              label="パスワード（確認）"
+              invalid={!!errors.password_confirm?.message}
+              errorText={errors.password_confirm?.message}
+            >
               <Input placeholder="••••••••" type="password" {...register('password_confirm')} />
-              <Field.ErrorText>{errors.password_confirm?.message}</Field.ErrorText>
-            </Field.Root>
+            </FormField>
           </Fieldset.Content>
           <Fieldset.ErrorText>ユーザーの登録に失敗しました。</Fieldset.ErrorText>
         </Fieldset.Root>

@@ -1,4 +1,4 @@
-import { Field, Fieldset, Input, Text } from '@chakra-ui/react';
+import { Fieldset, Input, Text } from '@chakra-ui/react';
 import { useState, type FC } from 'react';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import { PrimaryLink } from '../atoms/link/PrimaryLink';
 import { AuthFormCard } from '../organisms/AuthFormCard';
 import { useActionData, useSubmit } from 'react-router';
 import type { SignInError } from '@/routes/actions/signInAction';
+import { FormField } from '../molecules/form/FormField';
 
 const signInSchema = z.object({
   email: z.string().min(1, 'メールアドレスは入力必須です'),
@@ -43,14 +44,12 @@ export const SignIn: FC = () => {
       <AuthFormCard title="ログイン" onSubmit={handleSubmit(onSubmit)}>
         <Fieldset.Root mb={6} invalid={actionData?.isError}>
           <Fieldset.Content>
-            <Field.Root>
-              <Field.Label>メールアドレス</Field.Label>
+            <FormField label="メールアドレス">
               <Input placeholder="example.example.com" type="email" {...register('email')} />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label>パスワード</Field.Label>
+            </FormField>
+            <FormField label="パスワード">
               <Input placeholder="••••••••" type="password" {...register('password')} />
-            </Field.Root>
+            </FormField>
           </Fieldset.Content>
           <Fieldset.ErrorText fontSize="sm">{actionData?.message}</Fieldset.ErrorText>
         </Fieldset.Root>
