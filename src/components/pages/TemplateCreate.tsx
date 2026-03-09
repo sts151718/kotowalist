@@ -1,16 +1,46 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { BackLink } from '../molecules/link/BackLink';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
-import { Card, Checkbox, Fieldset, Heading, Input, Stack, Textarea } from '@chakra-ui/react';
+import { Card, Fieldset, Heading, Input } from '@chakra-ui/react';
 import { Form } from 'react-router';
 import { FormField } from '../molecules/form/FormField';
 import { TiptapEditor } from '../molecules/tiptap/TiptapEditor';
 import { FiPlus } from 'react-icons/fi';
 import { LiaSaveSolid } from 'react-icons/lia';
 import { PrimaryButton } from '../atoms/button/PrimaryButton';
+import { TemplateBlockCard } from '../molecules/template/TemplateBlockCard';
+import z from 'zod';
+
+const TemplateSchema = z.object({
+  id: z.uuid().nullable(),
+  openingText: z.string(),
+  closingText: z.string(),
+  doneFlag: z.boolean(),
+  doneResult: z.string(),
+});
+
+type TemplateForm = z.infer<typeof TemplateSchema>;
+type TemplateBlock = TemplateForm & { clientId: string };
 
 export const TemplateCreate: FC = () => {
+  const createInitialTemplate = (): TemplateBlock => {
+    const template = TemplateSchema.parse({
+      id: null,
+      openingText: '',
+      closingText: '',
+      doneFlag: false,
+      doneResult: '',
+    });
+    return { clientId: crypto.randomUUID(), ...template };
+  };
+
+  const [templates, setTemplates] = useState<Array<TemplateBlock>>([createInitialTemplate()]);
+
+  const addTemplateBlock = () => {
+    setTemplates((prev) => [...prev, createInitialTemplate()]);
+  };
+
   return (
     <MainContainer testId="template-create-page">
       <BackLink to="/">一覧へ戻る</BackLink>
@@ -44,30 +74,10 @@ export const TemplateCreate: FC = () => {
                 <Heading as="h3" fontSize="sm" mb={2}>
                   テンプレート
                 </Heading>
-                <Card.Root size="sm" mb={4}>
-                  <Card.Body>
-                    <Stack spaceY={4}>
-                      <FormField label="初めの言葉（感謝の言葉）">
-                        <Textarea placeholder="例：お誘い頂きありがとうございます。" />
-                      </FormField>
-                      <FormField label="締めの言葉（代替案）">
-                        <Textarea placeholder="例：またの機会にぜひお願いします。" />
-                      </FormField>
-                      <Checkbox.Root variant="solid" colorPalette="blue" size="sm">
-                        <Checkbox.HiddenInput />
-                        <Checkbox.Control>
-                          <Checkbox.Indicator />
-                        </Checkbox.Control>
-                        <Checkbox.Label fontSize="sm">実行済み</Checkbox.Label>
-                      </Checkbox.Root>
-
-                      <FormField required label="実行結果">
-                        <Textarea placeholder="実際にこのテンプレートを使ってみた結果を書いてください。" />
-                      </FormField>
-                    </Stack>
-                  </Card.Body>
-                </Card.Root>
-                <PrimaryButton variant="outline">
+                {templates.map((template) => (
+                  <TemplateBlockCard key={template.clientId} />
+                ))}
+                <PrimaryButton variant="outline" onClick={addTemplateBlock}>
                   <FiPlus />
                   テンプレートを追加
                 </PrimaryButton>
