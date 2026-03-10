@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import { MainContainer } from '../atoms/layout/MainContainer';
 import { BackLink } from '../molecules/link/BackLink';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
@@ -10,36 +10,20 @@ import { FiPlus } from 'react-icons/fi';
 import { LiaSaveSolid } from 'react-icons/lia';
 import { PrimaryButton } from '../atoms/button/PrimaryButton';
 import { TemplateBlockCard } from '../molecules/template/TemplateBlockCard';
-import z from 'zod';
+import { useTemplateForms } from '@/hooks/useTemplateForms';
 
-const TemplateSchema = z.object({
-  id: z.uuid().nullable(),
-  openingText: z.string(),
-  closingText: z.string(),
-  doneFlag: z.boolean(),
-  doneResult: z.string(),
-});
+// export const TemplateCreateFormSchema = z.object({
+//   declineSituation: z.string().min(1, { message: '断りたい状況は必須です' }),
+//   // Tiptapオブジェクトとの統合をするため一旦、any型
+//   // TODO: 適切な型を後でつける
+//   actualSituation: z.any().nullable(),
+//   actualFeeling: z.any().nullable(),
+// });
 
-type TemplateForm = z.infer<typeof TemplateSchema>;
-type TemplateBlock = TemplateForm & { clientId: string };
+// type TemplateForm = z.infer<typeof TemplateSchema>;
 
 export const TemplateCreate: FC = () => {
-  const createInitialTemplate = (): TemplateBlock => {
-    const template = TemplateSchema.parse({
-      id: null,
-      openingText: '',
-      closingText: '',
-      doneFlag: false,
-      doneResult: '',
-    });
-    return { clientId: crypto.randomUUID(), ...template };
-  };
-
-  const [templates, setTemplates] = useState<Array<TemplateBlock>>([createInitialTemplate()]);
-
-  const addTemplateBlock = () => {
-    setTemplates((prev) => [...prev, createInitialTemplate()]);
-  };
+  const { templateForms, addTemplateForm } = useTemplateForms();
 
   return (
     <MainContainer testId="template-create-page">
@@ -74,10 +58,10 @@ export const TemplateCreate: FC = () => {
                 <Heading as="h3" fontSize="sm" mb={2}>
                   テンプレート
                 </Heading>
-                {templates.map((template) => (
+                {templateForms.map((template) => (
                   <TemplateBlockCard key={template.clientId} />
                 ))}
-                <PrimaryButton variant="outline" onClick={addTemplateBlock}>
+                <PrimaryButton variant="outline" onClick={addTemplateForm}>
                   <FiPlus />
                   テンプレートを追加
                 </PrimaryButton>

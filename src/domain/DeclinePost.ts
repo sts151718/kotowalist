@@ -10,12 +10,12 @@ export interface IDeclinePost {
   demerit: JSONContent | null;
   actualSituation: JSONContent | null;
   actualFeeling: JSONContent | null;
-  templates: Array<IDeclineTemplates>;
+  templates: Array<IDeclineTemplate>;
   user: IUser;
   updatedAt: string;
 }
 
-export interface IDeclineTemplates {
+export interface IDeclineTemplate {
   id: number;
   openingText: string;
   closingText: string;
@@ -30,12 +30,12 @@ export interface IDeclinePostSource {
   demerit?: Json | null;
   actualSituation?: Json | null;
   actualFeeling?: Json | null;
-  templates?: Array<IDeclineTemplatesSource>;
+  templates?: Array<IDeclineTemplateSource>;
   user: IUser;
   updatedAt: string;
 }
 
-export interface IDeclineTemplatesSource {
+export interface IDeclineTemplateSource {
   id: number;
   openingText?: string | null;
   closingText?: string | null;
@@ -50,7 +50,7 @@ export class DeclincePost implements IDeclinePost {
   readonly demerit: JSONContent | null;
   readonly actualSituation: JSONContent | null;
   readonly actualFeeling: JSONContent | null;
-  readonly templates: IDeclineTemplates[];
+  readonly templates: IDeclineTemplate[];
   readonly user: IUser;
   readonly updatedAt: string;
 
@@ -61,7 +61,7 @@ export class DeclincePost implements IDeclinePost {
     demerit: JSONContent | null,
     actualSituation: JSONContent | null,
     actualFeeling: JSONContent | null,
-    templates: IDeclineTemplates[],
+    templates: IDeclineTemplate[],
     user: IUser,
     updatedAt: string
   ) {
