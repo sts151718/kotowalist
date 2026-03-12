@@ -1,5 +1,6 @@
 .tiptap-editor-content {
   padding: 12px;
+  min-height: 100px;
 }
 
 .tiptap-editor-content:focus,

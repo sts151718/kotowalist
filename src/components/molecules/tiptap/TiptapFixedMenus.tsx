@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { Editor } from '@tiptap/react';
 import type { FC } from 'react';
-import { FaBold, FaItalic, FaUnderline } from 'react-icons/fa';
+import { FaBold, FaUnderline } from 'react-icons/fa';
 import { LuCheck } from 'react-icons/lu';
 
 type Props = {
@@ -41,14 +41,6 @@ export const TiptapFixedMenus: FC<Props> = (props) => {
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <FaBold />
-      </IconButton>
-      <IconButton
-        aria-label="イタリック"
-        size="xs"
-        variant={editor.isActive('italic') ? 'solid' : 'ghost'}
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-      >
-        <FaItalic />
       </IconButton>
       <IconButton
         aria-label="下線"

@@ -13,6 +13,7 @@ import { signInAction } from './actions/signInAction';
 import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
 import { TemplateCreate } from '@/components/pages/TemplateCreate';
+import { templateCreateAction } from './actions/templateCreateAction';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -39,6 +40,7 @@ export const PageRoute = () => {
         {
           path: 'templates/create',
           Component: TemplateCreate,
+          action: templateCreateAction,
         },
         {
           path: 'signup',
