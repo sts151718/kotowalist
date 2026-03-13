@@ -11,7 +11,7 @@ export const existsEmail = async (email: string): Promise<boolean> => {
     throw new Error(`${error?.message}: ${error?.details}`);
   }
 
-  return count !== null && count < 1;
+  return count !== null && count >= 1;
 };
 
 export const existsUserName = async (userName: string): Promise<boolean> => {
@@ -26,7 +26,7 @@ export const existsUserName = async (userName: string): Promise<boolean> => {
     throw new Error(`${error?.message}: ${error?.details}`);
   }
 
-  return count !== null && count < 1;
+  return count !== null && count >= 1;
 };
 
 export const fetchUserByAuthId = async (authId: string): Promise<User | null> => {

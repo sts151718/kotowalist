@@ -16,8 +16,8 @@ export type StubChildRoute = NonNullable<StubRootRoute['children']>[number];
 export type MockAuthState = 'guest' | 'authenticated' | 'error';
 
 vi.mock('@/lib/supabase/users', () => ({
-  existsEmail: vi.fn().mockResolvedValue(true),
-  existsUserName: vi.fn().mockResolvedValue(true),
+  existsEmail: vi.fn().mockResolvedValue(false),
+  existsUserName: vi.fn().mockResolvedValue(false),
 }));
 
 vi.mock('@/lib/supabase/auth', () => ({
