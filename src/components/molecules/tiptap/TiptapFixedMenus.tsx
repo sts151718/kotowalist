@@ -6,8 +6,8 @@ import {
   Separator,
   type ColorPickerValueChangeDetails,
 } from '@chakra-ui/react';
-import { Editor } from '@tiptap/react';
-import type { FC } from 'react';
+import { type Editor, useEditorState } from '@tiptap/react';
+import { memo, type FC } from 'react';
 import { FaBold, FaUnderline } from 'react-icons/fa';
 import { LuCheck } from 'react-icons/lu';
 
@@ -15,8 +15,15 @@ type Props = {
   editor: Editor;
 };
 
-export const TiptapFixedMenus: FC<Props> = (props) => {
+export const TiptapFixedMenus: FC<Props> = memo((props) => {
   const { editor } = props;
+  const { isActiveBold, isActiveUnderline } = useEditorState({
+    editor,
+    selector: ({ editor: currentEditor }) => ({
+      isActiveBold: currentEditor?.isActive('bold') ?? false,
+      isActiveUnderline: currentEditor?.isActive('underline') ?? false,
+    }),
+  });
 
   const swatches = ['#000000', '#ef4444', '#f97316', '#22c55e', '#3b82f6', '#9333ea', '#db2777', '#71717a'];
   const onColorChange = ({ valueAsString }: ColorPickerValueChangeDetails) => {
@@ -36,16 +43,16 @@ export const TiptapFixedMenus: FC<Props> = (props) => {
     >
       <IconButton
         aria-label="太字"
-        size="xs"
-        variant={editor.isActive('bold') ? 'solid' : 'ghost'}
+        size="2xs"
+        variant={isActiveBold ? 'solid' : 'ghost'}
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
         <FaBold />
       </IconButton>
       <IconButton
         aria-label="下線"
-        size="xs"
-        variant={editor.isActive('underline') ? 'solid' : 'ghost'}
+        size="2xs"
+        variant={isActiveUnderline ? 'solid' : 'ghost'}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
       >
         <FaUnderline />
@@ -75,4 +82,4 @@ export const TiptapFixedMenus: FC<Props> = (props) => {
       </ColorPicker.Root>
     </Flex>
   );
-};
+});

@@ -99,11 +99,7 @@ export const TemplateCreate: FC = () => {
                     control={control}
                     name="actualSituation"
                     render={({ field }) => (
-                      <TiptapEditor
-                        content={field.value}
-                        onChange={field.onChange}
-                        placeholder="例：金曜の夕方に突然誘われました"
-                      />
+                      <TiptapEditor content={field.value} onChange={field.onChange} placeholder="" />
                     )}
                   />
                 </FormField>

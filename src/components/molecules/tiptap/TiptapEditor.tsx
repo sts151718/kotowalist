@@ -1,6 +1,5 @@
 import { defaultExtension } from '@/lib/tiptap/extensions';
 import { EditorContent, EditorContext, useEditor, type Content, type Extensions } from '@tiptap/react';
-import { BubbleMenu } from '@tiptap/react/menus';
 import { Placeholder } from '@tiptap/extensions/placeholder';
 import { useMemo, type FC } from 'react';
 import { TiptapFixedMenus } from './TiptapFixedMenus';
@@ -34,10 +33,9 @@ export const TiptapEditor: FC<Props> = (props) => {
 
   return (
     <Box w="full" border="1px solid" borderColor="gray.200" borderRadius="sm" fontSize="sm">
-      <TiptapFixedMenus editor={editor} />
       <EditorContext.Provider value={providerValue}>
+        <TiptapFixedMenus editor={editor} />
         <EditorContent editor={editor} />
-        <BubbleMenu editor={editor}></BubbleMenu>
       </EditorContext.Provider>
     </Box>
   );
