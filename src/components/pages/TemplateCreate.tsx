@@ -90,7 +90,11 @@ export const TemplateCreate: FC = () => {
             </Card.Root>
             <Card.Root size="sm" variant="elevated" shadow="xs">
               <Card.Body>
-                <FormField label="実際にあった状況">
+                <FormField
+                  label="実際にあった状況"
+                  invalid={!!errors.actualSituation}
+                  errorText={errors.actualSituation?.message}
+                >
                   <Controller
                     control={control}
                     name="actualSituation"
@@ -107,7 +111,11 @@ export const TemplateCreate: FC = () => {
             </Card.Root>
             <Card.Root size="sm" variant="elevated" shadow="xs">
               <Card.Body>
-                <FormField label="当時の心境">
+                <FormField
+                  label="当時の心境"
+                  invalid={!!errors.actualFeeling}
+                  errorText={errors.actualFeeling?.message}
+                >
                   <Controller
                     control={control}
                     name="actualFeeling"
@@ -124,7 +132,11 @@ export const TemplateCreate: FC = () => {
             </Card.Root>
             <Card.Root size="sm" variant="elevated" shadow="xs">
               <Card.Body>
-                <FormField label="断らなかったときのデメリット">
+                <FormField
+                  label="断らなかったときのデメリット"
+                  invalid={!!errors.demerit}
+                  errorText={errors.demerit?.message}
+                >
                   <Controller
                     control={control}
                     name="demerit"

@@ -19,12 +19,12 @@ const signUpSchema = z
       .min(3, { message: 'ユーザー名は3文字以上で入力してください' })
       .max(20, { message: 'ユーザー名は20文字以内で入力してください' })
       .regex(/^[a-zA-Z0-9_]+$/, { message: 'ユーザー名は英数字とアンダーバーのみ使用可能です' })
-      .refine(async (user_name) => existsUserName(user_name), {
+      .refine(async (user_name) => !(await existsUserName(user_name)), {
         message: '入力したユーザー名が重複しています。',
       }),
     email: z
       .email({ message: '有効なメールアドレスを入力してください' })
-      .refine(async (email) => await existsEmail(email), {
+      .refine(async (email) => !(await existsEmail(email)), {
         message: '入力したパスワードが重複しています。',
       }),
     password: z
