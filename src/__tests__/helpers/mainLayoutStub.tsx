@@ -9,11 +9,19 @@ import { AuthError } from '@supabase/supabase-js';
 import { SignIn } from '@/components/pages/SignIn';
 import { guestOnlyLoader } from '@/routes/loader/guestOnlyLoader';
 import { fetchClaims } from '@/lib/supabase/auth';
+import { TemplateCreate } from '@/components/pages/TemplateCreate';
+import { authRequiredLoader } from '@/routes/loader/authRequiredLoader';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
 type StubRootRoute = StubRoutes[number];
 export type StubChildRoute = NonNullable<StubRootRoute['children']>[number];
 export type MockAuthState = 'guest' | 'authenticated' | 'error';
+
+const authMocks = vi.hoisted(() => ({
+  signOut: vi.fn(),
+}));
+
+export const mockSignOut = authMocks.signOut;
 
 vi.mock('@/lib/supabase/users', () => ({
   existsEmail: vi.fn().mockResolvedValue(false),
@@ -34,7 +42,7 @@ vi.mock('@/lib/supabase/auth', () => ({
   })),
   signIn: vi.fn(),
   signUp: vi.fn(),
-  signOut: vi.fn(),
+  signOut: authMocks.signOut,
 }));
 
 const claimsByState: Record<MockAuthState, AuthClaims> = {
@@ -67,6 +75,13 @@ export const createDefaultMainLayoutRoot = (): StubChildRoute[] => [
     path: '/resources/posts',
     hydrateFallbackElement: <></>,
     loader: async () => Promise.resolve([]),
+  },
+  {
+    path: '/templates/create',
+    Component: TemplateCreate,
+    hydrateFallbackElement: <></>,
+    action: async () => ({}),
+    loader: authRequiredLoader,
   },
   {
     path: 'signup',
