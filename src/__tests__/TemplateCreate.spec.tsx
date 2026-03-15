@@ -6,42 +6,6 @@ import { Provider } from '@/components/ui/provider';
 import { createDefaultMainLayoutRoot, createMainLayoutStubRoot, type MockAuthState } from './helpers/mainLayoutStub';
 import { insertDeclinePost } from '@/lib/supabase/declinePosts';
 
-vi.mock('@/components/molecules/tiptap/TiptapEditor', () => ({
-  TiptapEditor: ({
-    content,
-    onChange,
-    testId,
-  }: {
-    content?: {
-      type: string;
-      content?: Array<{ type: string; content?: Array<{ type: string; text: string }> }>;
-    } | null;
-    onChange?: (
-      content: {
-        type: 'doc';
-        content: Array<{ type: 'paragraph'; content: Array<{ type: 'text'; text: string }> }>;
-      } | null
-    ) => void;
-    testId?: string;
-  }) => (
-    <textarea
-      data-testid={testId}
-      value={content?.content?.[0]?.content?.[0]?.text ?? ''}
-      onChange={(event) =>
-        onChange?.({
-          type: 'doc',
-          content: [
-            {
-              type: 'paragraph',
-              content: [{ type: 'text', text: event.target.value }],
-            },
-          ],
-        })
-      }
-    />
-  ),
-}));
-
 const renderTemplateCreatePage = (authState: MockAuthState = 'authenticated') => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
@@ -81,13 +45,9 @@ const inputValidForm = async () => {
   );
 };
 
-const getRichTextInput = async (testId: string) => {
-  const templateCreatePage = await screen.findByTestId('template-create-page');
-  return within(templateCreatePage).getByTestId(testId);
-};
-
 const fillTextareaByName = async (name: string, value: string) => {
   const templateCreatePage = await screen.findByTestId('template-create-page');
+
   const user = userEvent.setup();
   const textarea = within(templateCreatePage).getByRole('textbox', { name });
 
@@ -96,11 +56,14 @@ const fillTextareaByName = async (name: string, value: string) => {
 };
 
 const fillRichTextEditor = async (testId: string, value: string) => {
-  const user = userEvent.setup();
-  const input = await getRichTextInput(testId);
+  const user = userEvent.setup({ delay: null });
 
-  await user.clear(input);
-  await user.type(input, value);
+  const templateCreatePage = await screen.findByTestId('template-create-page');
+  const editor = within(templateCreatePage).getByTestId(testId);
+  const input = within(editor).getByRole('textbox');
+
+  await user.click(input);
+  await user.paste(value);
 };
 
 const mockInsertDeclinePost = vi.mocked(insertDeclinePost);
