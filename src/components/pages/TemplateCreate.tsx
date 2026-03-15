@@ -99,7 +99,12 @@ export const TemplateCreate: FC = () => {
                     control={control}
                     name="actualSituation"
                     render={({ field }) => (
-                      <TiptapEditor content={field.value} onChange={field.onChange} placeholder="" />
+                      <TiptapEditor
+                        content={field.value}
+                        onChange={field.onChange}
+                        placeholder=""
+                        testId="actual-situation-editor"
+                      />
                     )}
                   />
                 </FormField>
@@ -120,6 +125,7 @@ export const TemplateCreate: FC = () => {
                         content={field.value}
                         onChange={field.onChange}
                         placeholder="例：断りづらくて困りました"
+                        testId="actual-feeling-editor"
                       />
                     )}
                   />
@@ -141,6 +147,7 @@ export const TemplateCreate: FC = () => {
                         content={field.value}
                         onChange={field.onChange}
                         placeholder="例：趣味の時間が取れなくなる。"
+                        testId="demerit-editor"
                       />
                     )}
                   />

@@ -11,6 +11,7 @@ import { guestOnlyLoader } from '@/routes/loader/guestOnlyLoader';
 import { fetchClaims } from '@/lib/supabase/auth';
 import { TemplateCreate } from '@/components/pages/TemplateCreate';
 import { authRequiredLoader } from '@/routes/loader/authRequiredLoader';
+import { templateCreateAction } from '@/routes/actions/templateCreateAction';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
 type StubRootRoute = StubRoutes[number];
@@ -26,6 +27,10 @@ export const mockSignOut = authMocks.signOut;
 vi.mock('@/lib/supabase/users', () => ({
   existsEmail: vi.fn().mockResolvedValue(false),
   existsUserName: vi.fn().mockResolvedValue(false),
+}));
+
+vi.mock('@/lib/supabase/declinePosts', () => ({
+  insertDeclinePost: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/auth', () => ({
@@ -80,7 +85,7 @@ export const createDefaultMainLayoutRoot = (): StubChildRoute[] => [
     path: '/templates/create',
     Component: TemplateCreate,
     hydrateFallbackElement: <></>,
-    action: async () => ({}),
+    action: templateCreateAction,
     loader: authRequiredLoader,
   },
   {

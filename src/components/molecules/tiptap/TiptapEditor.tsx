@@ -11,10 +11,11 @@ type Props = {
   extensions?: Extensions;
   placeholder?: string;
   onChange?: (content: JSONContent | null) => void;
+  testId?: string;
 };
 
 export const TiptapEditor: FC<Props> = (props) => {
-  const { content = '', extensions = defaultExtension, placeholder = '', onChange } = props;
+  const { content = '', extensions = defaultExtension, placeholder = '', onChange, testId } = props;
 
   const editor = useEditor({
     extensions: [...extensions, Placeholder.configure({ placeholder })],
@@ -32,7 +33,7 @@ export const TiptapEditor: FC<Props> = (props) => {
   const providerValue = useMemo(() => ({ editor }), [editor]);
 
   return (
-    <Box w="full" border="1px solid" borderColor="gray.200" borderRadius="sm" fontSize="sm">
+    <Box w="full" border="1px solid" borderColor="gray.200" borderRadius="sm" fontSize="sm" data-testid={testId}>
       <EditorContext.Provider value={providerValue}>
         <TiptapFixedMenus editor={editor} />
         <EditorContent editor={editor} />
