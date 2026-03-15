@@ -1,7 +1,7 @@
-import { Card, Checkbox, Collapsible, Stack, Textarea, useCollapsible } from '@chakra-ui/react';
-import { type FC } from 'react';
+import { Card, Checkbox, Stack, Textarea } from '@chakra-ui/react';
+import { type FC, useEffect, useState } from 'react';
 import { FormField } from '../form/FormField';
-import { Controller, type Control, type FieldErrors, type UseFormRegister } from 'react-hook-form';
+import { Controller, type Control, type FieldErrors, type UseFormRegister, useWatch } from 'react-hook-form';
 import type { DeclineForm, TemplateForm } from '@/schemas/declinePosts/form';
 
 type Props = {
@@ -12,7 +12,15 @@ type Props = {
 };
 
 export const TemplateBlockCard: FC<Props> = ({ control, errors, index, register }) => {
-  const collapsible = useCollapsible();
+  const doneFlag = useWatch({
+    control,
+    name: `templates.${index}.doneFlag`,
+  });
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(doneFlag === true);
+  }, [doneFlag]);
 
   return (
     <Card.Root size="sm" mb={4}>
@@ -47,15 +55,13 @@ export const TemplateBlockCard: FC<Props> = ({ control, errors, index, register 
               <Checkbox.Root
                 checked={field.value}
                 onCheckedChange={({ checked }) => {
-                  const nextChecked = checked === true;
-                  field.onChange(nextChecked);
-                  collapsible.setOpen(!collapsible.open);
+                  field.onChange(checked);
                 }}
                 variant="solid"
                 colorPalette="blue"
                 size="sm"
               >
-                <Checkbox.HiddenInput name={field.name} onBlur={field.onBlur} />
+                <Checkbox.HiddenInput name={field.name} />
                 <Checkbox.Control>
                   <Checkbox.Indicator />
                 </Checkbox.Control>
@@ -64,8 +70,8 @@ export const TemplateBlockCard: FC<Props> = ({ control, errors, index, register 
             )}
           />
 
-          <Collapsible.RootProvider value={collapsible}>
-            <Collapsible.Content>
+          {open && (
+            <>
               <FormField
                 required
                 label="実行結果"
@@ -77,8 +83,8 @@ export const TemplateBlockCard: FC<Props> = ({ control, errors, index, register 
                   {...register(`templates.${index}.doneResult`)}
                 />
               </FormField>
-            </Collapsible.Content>
-          </Collapsible.RootProvider>
+            </>
+          )}
         </Stack>
       </Card.Body>
     </Card.Root>
