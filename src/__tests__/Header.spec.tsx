@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from '@/components/ui/provider';
@@ -7,11 +7,12 @@ import 'react-intersection-observer/test-utils';
 import {
   createDefaultMainLayoutRoot,
   createMainLayoutStubRoot,
+  mockSignOut,
   stubAuthenticatedUser,
   type MockAuthState,
 } from './helpers/mainLayoutStub';
 
-const renderHeader = (authState: MockAuthState = 'guest') => {
+const renderHeader = (authState: MockAuthState = 'guest', initialEntry = '/dummy') => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const children = [
@@ -26,12 +27,16 @@ const renderHeader = (authState: MockAuthState = 'guest') => {
 
   render(
     <Provider>
-      <Stub initialEntries={['/dummy']} />
+      <Stub initialEntries={[initialEntry]} />
     </Provider>
   );
 };
 
 describe('ヘッダーコンポーネントのテスト', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('ロゴが表示されていること', async () => {
     renderHeader();
     const header = await screen.findByRole('banner');
@@ -85,14 +90,49 @@ describe('ヘッダーコンポーネントのテスト', () => {
     });
   });
 
-  it.skip('認証時、新規投稿ページに遷移できること', async () => {
+  it('未認証時、ログイン必須ページへ直接アクセスできないこと', async () => {
+    renderHeader('guest', '/templates/create');
+
+    const topPage = await screen.findByTestId('top-page');
+
+    expect(topPage).toBeVisible();
+    expect(screen.queryByTestId('template-create-page')).not.toBeInTheDocument();
+  });
+
+  it('認証時、ログアウトを押すとサインアウト処理が呼ばれること', async () => {
     renderHeader('authenticated');
 
     const header = await screen.findByRole('banner');
-    const registerButton = within(header).getByRole('button', { name: '新規投稿' });
+    const signoutButton = within(header).getByRole('button', { name: 'ログアウト' });
 
     const user = userEvent.setup();
-    await user.click(registerButton);
+    await user.click(signoutButton);
+
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+  });
+
+  it('認証時、新規投稿ページに遷移できること', async () => {
+    renderHeader('authenticated');
+
+    const header = await screen.findByRole('banner');
+    const createButton = within(header).getByRole('button', { name: '新規投稿' });
+
+    const user = userEvent.setup();
+    await user.click(createButton);
+
+    await waitFor(() => {
+      const createPage = screen.getByTestId('template-create-page');
+      expect(createPage).toBeVisible();
+    });
+  });
+
+  it('認証時、ゲスト専用ページへ直接アクセスできないこと', async () => {
+    renderHeader('authenticated', '/signin');
+
+    const topPage = await screen.findByTestId('top-page');
+
+    expect(topPage).toBeVisible();
+    expect(screen.queryByTestId('sign-in-page')).not.toBeInTheDocument();
   });
 
   it('認証時、ログインユーザー名が描画されていること', async () => {

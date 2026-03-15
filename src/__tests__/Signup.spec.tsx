@@ -42,8 +42,8 @@ const mockExistsUserName = vi.mocked(existsUserName);
 describe('新規登録ページのテスト', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockExistsEmail.mockResolvedValue(true);
-    mockExistsUserName.mockResolvedValue(true);
+    mockExistsEmail.mockResolvedValue(false);
+    mockExistsUserName.mockResolvedValue(false);
   });
 
   it('ヘッダーが表示されていること', async () => {
@@ -169,8 +169,8 @@ describe('新規登録ページのテスト', () => {
   });
 
   it('ユーザー名とメールアドレスが重複しているときにエラーメッセージが表示されること', async () => {
-    mockExistsUserName.mockResolvedValue(false);
-    mockExistsEmail.mockResolvedValue(false);
+    mockExistsUserName.mockResolvedValue(true);
+    mockExistsEmail.mockResolvedValue(true);
 
     renderSignupPage();
 

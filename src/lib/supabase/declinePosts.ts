@@ -1,6 +1,7 @@
 import { DeclincePost, type IDeclinePostSource } from '@/domain/DeclinePost';
 import type { Tables } from './schema';
 import { supabase } from './setup';
+import type { DeclineForm } from '@/schemas/declinePosts/form';
 
 export type PostRecord = Tables<'decline_posts'> & {
   decline_templates?: Array<Tables<'decline_templates'>>;
@@ -103,4 +104,32 @@ export const countAllPost = async (): Promise<number> => {
   }
 
   return count ?? 0;
+};
+
+export const insertDeclinePost = async (insertData: DeclineForm, userId: number): Promise<string> => {
+  const templatesJson = insertData.templates.map((template) => ({
+    opening_text: template.openingText,
+    closing_text: template.closingText,
+    done_flag: template.doneFlag,
+    done_result: template.doneResult,
+  }));
+
+  const { data, error } = await supabase.rpc('insert_decline_post_templates', {
+    _actual_feeling: insertData.actualFeeling,
+    _actual_situation: insertData.actualSituation,
+    _decline_sitiation: insertData.declineSituation,
+    _demerit: insertData.demerit,
+    _templates_json: templatesJson,
+    _user_id: userId,
+  });
+
+  if (error) {
+    throw new Error(`${error?.message}: ${error?.details}`);
+  }
+
+  if (!data) {
+    throw new Error('failed insert decline post');
+  }
+
+  return data;
 };

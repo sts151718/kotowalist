@@ -12,13 +12,42 @@ import { SignIn } from '@/components/pages/SignIn';
 import { signInAction } from './actions/signInAction';
 import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
+import { TemplateCreate } from '@/components/pages/TemplateCreate';
+import { templateCreateAction } from './actions/templateCreateAction';
+import { authRequiredLoader } from './loader/authRequiredLoader';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
     {
+      id: 'root',
       Component: MainLayout,
       loader: authLoader,
       children: [
+        {
+          loader: authRequiredLoader,
+          children: [
+            {
+              path: 'templates/create',
+              Component: TemplateCreate,
+              action: templateCreateAction,
+            },
+          ],
+        },
+        {
+          loader: guestOnlyLoader,
+          children: [
+            {
+              path: 'signup',
+              Component: SignUp,
+              action: signUpAction,
+            },
+            {
+              path: 'signin',
+              Component: SignIn,
+              action: signInAction,
+            },
+          ],
+        },
         {
           path: '/',
           Component: Top,
@@ -34,18 +63,6 @@ export const PageRoute = () => {
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
           loader: templateDetailLoader,
-        },
-        {
-          path: 'signup',
-          Component: SignUp,
-          loader: guestOnlyLoader,
-          action: signUpAction,
-        },
-        {
-          path: 'signin',
-          Component: SignIn,
-          loader: guestOnlyLoader,
-          action: signInAction,
         },
         {
           path: '*',
