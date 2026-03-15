@@ -18,7 +18,8 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
   const { post } = props;
 
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthState();
+  const { authUser } = useAuthState();
+  const isEditable = authUser?.id === post.user.id;
 
   const bodyPx = 4;
 
@@ -33,7 +34,7 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
               {post.declineSituation}
             </Heading>
 
-            {isAuthenticated && (
+            {isEditable && (
               <IconButton size="xs" colorPalette="blue" borderRadius={8} onClick={onClickEditPage}>
                 <FiEdit />
               </IconButton>
