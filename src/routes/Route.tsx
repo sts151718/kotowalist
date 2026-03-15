@@ -63,6 +63,7 @@ export const PageRoute = () => {
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
           loader: templateDetailLoader,
+          ErrorBoundary: Page404,
         },
         {
           path: '*',
