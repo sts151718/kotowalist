@@ -14,6 +14,7 @@ import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
 import { TemplateCreate } from '@/components/pages/TemplateCreate';
 import { templateCreateAction } from './actions/templateCreateAction';
+import { templateUpdateAction } from './actions/templateUpdateAction';
 import { authRequiredLoader } from './loader/authRequiredLoader';
 import { TemplateEdit } from '@/components/pages/TemplateEdit';
 
@@ -36,7 +37,7 @@ export const PageRoute = () => {
               path: 'templates/:publicId/edit',
               Component: TemplateEdit,
               loader: templateDetailLoader,
-              action: templateCreateAction,
+              action: templateUpdateAction,
               ErrorBoundary: Page404,
             },
           ],

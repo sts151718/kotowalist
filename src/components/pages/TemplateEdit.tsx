@@ -3,7 +3,7 @@ import { MainContainer } from '../atoms/layout/MainContainer';
 import { BackLink } from '../molecules/link/BackLink';
 import { PrimaryHeading } from '../molecules/text/PrimaryHeading';
 import { Await, useActionData, useLoaderData, useParams } from 'react-router';
-import type { TemplateCreateError } from '@/routes/actions/templateCreateAction';
+import type { TemplateUpdateError } from '@/routes/actions/templateUpdateAction';
 import type { DeclincePost } from '@/domain/DeclinePost';
 import { Center } from '@chakra-ui/react';
 import { MainSpinner } from '../atoms/MainSpinner';
@@ -12,7 +12,7 @@ import { TemplateEditorForm } from '../organisms/TemplateEditorForm';
 export const TemplateEdit: FC = () => {
   const { publicId } = useParams();
   const { currentPostPromise } = useLoaderData<{ currentPostPromise: Promise<DeclincePost> }>();
-  const actionData = useActionData<TemplateCreateError>();
+  const actionData = useActionData<TemplateUpdateError>();
 
   return (
     <MainContainer testId="template-edit-page">

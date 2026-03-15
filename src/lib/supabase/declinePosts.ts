@@ -133,3 +133,32 @@ export const insertDeclinePost = async (insertData: DeclineForm, userId: number)
 
   return data;
 };
+
+export const updateDeclinePost = async (postId: number, updateData: DeclineForm): Promise<string> => {
+  const templatesJson = updateData.templates.map((template) => ({
+    id: template.id,
+    opening_text: template.openingText,
+    closing_text: template.closingText,
+    done_flag: template.doneFlag,
+    done_result: template.doneResult,
+  }));
+
+  const { data, error } = await supabase.rpc('upsert_decline_post_templates', {
+    _id: postId,
+    _actual_feeling: updateData.actualFeeling,
+    _actual_situation: updateData.actualSituation,
+    _decline_sitiation: updateData.declineSituation,
+    _demerit: updateData.demerit,
+    _templates_json: templatesJson,
+  });
+
+  if (error) {
+    throw new Error(`${error?.message}: ${error?.details}`);
+  }
+
+  if (!data) {
+    throw new Error('failed update decline post');
+  }
+
+  return data;
+};
