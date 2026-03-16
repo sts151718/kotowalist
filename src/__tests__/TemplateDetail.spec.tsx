@@ -1,3 +1,4 @@
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import { Page404 } from '@/components/pages/Page404';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
@@ -6,7 +7,6 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
 import { Provider } from '@/components/ui/provider';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
