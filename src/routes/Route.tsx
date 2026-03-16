@@ -14,7 +14,9 @@ import { authLoader } from './loader/authLoader';
 import { guestOnlyLoader } from './loader/guestOnlyLoader';
 import { TemplateCreate } from '@/components/pages/TemplateCreate';
 import { templateCreateAction } from './actions/templateCreateAction';
+import { templateUpdateAction } from './actions/templateUpdateAction';
 import { authRequiredLoader } from './loader/authRequiredLoader';
+import { TemplateEdit } from '@/components/pages/TemplateEdit';
 
 export const PageRoute = () => {
   const router = createBrowserRouter([
@@ -30,6 +32,13 @@ export const PageRoute = () => {
               path: 'templates/create',
               Component: TemplateCreate,
               action: templateCreateAction,
+            },
+            {
+              path: 'templates/:publicId/edit',
+              Component: TemplateEdit,
+              loader: templateDetailLoader,
+              action: templateUpdateAction,
+              ErrorBoundary: Page404,
             },
           ],
         },
@@ -63,6 +72,7 @@ export const PageRoute = () => {
           Component: TemplateDetail,
           hydrateFallbackElement: <></>,
           loader: templateDetailLoader,
+          ErrorBoundary: Page404,
         },
         {
           path: '*',

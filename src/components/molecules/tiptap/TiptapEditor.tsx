@@ -26,6 +26,7 @@ export const TiptapEditor: FC<Props> = (props) => {
     editorProps: {
       attributes: {
         class: 'tiptap-editor-content',
+        role: 'textbox',
       },
     },
   });

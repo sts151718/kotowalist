@@ -1,3 +1,4 @@
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 import { type IDeclinePostSource } from '@/domain/DeclinePost';
 import { DeclincePost } from '@/domain/DeclinePost';
 import { createRoutesStub, type LoaderFunctionArgs } from 'react-router';
@@ -8,7 +9,6 @@ import { TemplateDetail } from '@/components/pages/TemplateDetail';
 import userEvent from '@testing-library/user-event';
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
 import { Provider } from '@/components/ui/provider';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const createMockPostList = (postsNum: number = 21): Array<IDeclinePostSource> => {
   return [...Array(postsNum).keys()].map((index) => ({

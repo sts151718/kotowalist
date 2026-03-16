@@ -1,11 +1,12 @@
+import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
+import { Page404 } from '@/components/pages/Page404';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
 import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import dayjs from 'dayjs';
 import { Provider } from '@/components/ui/provider';
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
 
 const mockDefaultPostRecord: IDeclinePost = {
   id: 1,
@@ -232,6 +233,35 @@ describe('テンプレート詳細ページのテスト', () => {
 
     expect(template1).toBeVisible();
     expect(template2).toBeVisible();
+  });
+
+  it('存在しない投稿の場合、404ページが表示されること', async () => {
+    const defaultChildrenRoot = createDefaultMainLayoutRoot();
+
+    const Stub = createRoutesStub([
+      createMainLayoutStubRoot([
+        ...defaultChildrenRoot,
+        {
+          path: '/templates/:publicId',
+          Component: TemplateDetail,
+          loader: () => {
+            throw new Response(null, { status: 404 });
+          },
+          ErrorBoundary: Page404,
+        },
+      ]),
+    ]);
+
+    render(
+      <Provider>
+        <Stub initialEntries={['/templates/not-found']} />
+      </Provider>
+    );
+
+    const notFoundHeading = await screen.findByRole('heading', { level: 2, name: 'Not Found 404' });
+
+    expect(notFoundHeading).toBeVisible();
+    expect(screen.getByText('ページが見つかりませんでした。')).toBeVisible();
   });
 
   it('テンプレートの初めの言葉と締めの言葉が表示されること。', async () => {

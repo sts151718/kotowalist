@@ -12,6 +12,7 @@ import { fetchClaims } from '@/lib/supabase/auth';
 import { TemplateCreate } from '@/components/pages/TemplateCreate';
 import { authRequiredLoader } from '@/routes/loader/authRequiredLoader';
 import { templateCreateAction } from '@/routes/actions/templateCreateAction';
+import { fetchUserByAuthId } from '@/lib/supabase/users';
 
 type StubRoutes = Parameters<typeof createRoutesStub>[0];
 type StubRootRoute = StubRoutes[number];
@@ -27,10 +28,12 @@ export const mockSignOut = authMocks.signOut;
 vi.mock('@/lib/supabase/users', () => ({
   existsEmail: vi.fn().mockResolvedValue(false),
   existsUserName: vi.fn().mockResolvedValue(false),
+  fetchUserByAuthId: vi.fn().mockResolvedValue(null),
 }));
 
 vi.mock('@/lib/supabase/declinePosts', () => ({
   insertDeclinePost: vi.fn(),
+  updateDeclinePost: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/auth', () => ({
@@ -109,6 +112,7 @@ export const createMainLayoutStubRoot = (
 ): StubRootRoute => {
   const claims = claimsByState[authState];
   vi.mocked(fetchClaims).mockResolvedValue(claims);
+  vi.mocked(fetchUserByAuthId).mockResolvedValue(authState === 'authenticated' ? stubAuthenticatedUser : null);
 
   return {
     Component: MainLayout,

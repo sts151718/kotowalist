@@ -1,11 +1,14 @@
 import type { DeclincePost } from '@/domain/DeclinePost';
-import { Box, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, IconButton, Stack, Text, VStack } from '@chakra-ui/react';
 import { memo, type FC } from 'react';
 import { FaRegCalendar, FaRegUser } from 'react-icons/fa';
 import { IconText } from '@/components/molecules/text/IconText';
 import { TipTapReactElement } from '../atoms/tiptap/TipTapReactElement';
 import { TemplateDetailLayout } from './TemplateDetailLayout';
 import { StatusTag } from '../molecules/StatusTag';
+import { FiEdit } from 'react-icons/fi';
+import { useNavigate } from 'react-router';
+import { useAuthState } from '@/hooks/useAuthState';
 
 type Props = {
   post: DeclincePost;
@@ -14,14 +17,29 @@ type Props = {
 export const TemplateDetailCard: FC<Props> = memo((props) => {
   const { post } = props;
 
+  const navigate = useNavigate();
+  const { authUser } = useAuthState();
+  const isEditable = authUser?.id === post.user.id;
+
   const bodyPx = 4;
+
+  const onClickEditPage = () => navigate(`/templates/${post.publicId}/edit`);
+
   return (
     <TemplateDetailLayout
       header={
         <VStack alignItems="left">
-          <Heading as="h2" size="xl">
-            {post.declineSituation}
-          </Heading>
+          <Flex alignItems="center" justifyContent="space-between">
+            <Heading as="h2" size="xl">
+              {post.declineSituation}
+            </Heading>
+
+            {isEditable && (
+              <IconButton size="xs" colorPalette="blue" borderRadius={8} onClick={onClickEditPage}>
+                <FiEdit />
+              </IconButton>
+            )}
+          </Flex>
           <HStack gap={4}>
             <IconText icon={<FaRegUser />} text={post.user.userName} color="gray.400" />
             <IconText icon={<FaRegCalendar />} text={post.updatedAt} color="gray.400" />
