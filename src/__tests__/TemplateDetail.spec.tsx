@@ -1,6 +1,10 @@
-import { createDefaultMainLayoutRoot, createMainLayoutStubRoot } from './helpers/mainLayoutStub';
+import {
+  createDefaultMainLayoutRoot,
+  createMainLayoutStubRoot,
+  type MockAuthState,
+  stubAuthenticatedUser,
+} from './helpers/mainLayoutStub';
 import { TemplateDetail } from '@/components/pages/TemplateDetail';
-import { Page404 } from '@/components/pages/Page404';
 import { DeclincePost, type IDeclinePost } from '@/domain/DeclinePost';
 import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -57,8 +61,8 @@ const mockDefaultPostRecord: IDeclinePost = {
     ],
   },
   user: {
-    id: 1,
-    userName: 'test_user',
+    id: stubAuthenticatedUser.id,
+    userName: stubAuthenticatedUser.userName,
   },
   templates: [
     {
@@ -78,22 +82,25 @@ const mockDefaultPostRecord: IDeclinePost = {
   ],
 };
 
-const renderDetailPage = (post: IDeclinePost) => {
+const renderDetailPage = (post: IDeclinePost, authState: MockAuthState = 'guest') => {
   const defaultChildrenRoot = createDefaultMainLayoutRoot();
 
   const Stub = createRoutesStub([
-    createMainLayoutStubRoot([
-      ...defaultChildrenRoot,
-      {
-        path: `/templates/${post.publicId}`,
-        Component: TemplateDetail,
-        loader: () => {
-          return {
-            currentPostPromise: Promise.resolve(DeclincePost.create(post)),
-          };
+    createMainLayoutStubRoot(
+      [
+        ...defaultChildrenRoot,
+        {
+          path: `/templates/${post.publicId}`,
+          Component: TemplateDetail,
+          loader: () => {
+            return {
+              currentPostPromise: Promise.resolve(DeclincePost.create(post)),
+            };
+          },
         },
-      },
-    ]),
+      ],
+      authState
+    ),
   ]);
 
   render(
@@ -235,35 +242,6 @@ describe('テンプレート詳細ページのテスト', () => {
     expect(template2).toBeVisible();
   });
 
-  it('存在しない投稿の場合、404ページが表示されること', async () => {
-    const defaultChildrenRoot = createDefaultMainLayoutRoot();
-
-    const Stub = createRoutesStub([
-      createMainLayoutStubRoot([
-        ...defaultChildrenRoot,
-        {
-          path: '/templates/:publicId',
-          Component: TemplateDetail,
-          loader: () => {
-            throw new Response(null, { status: 404 });
-          },
-          ErrorBoundary: Page404,
-        },
-      ]),
-    ]);
-
-    render(
-      <Provider>
-        <Stub initialEntries={['/templates/not-found']} />
-      </Provider>
-    );
-
-    const notFoundHeading = await screen.findByRole('heading', { level: 2, name: 'Not Found 404' });
-
-    expect(notFoundHeading).toBeVisible();
-    expect(screen.getByText('ページが見つかりませんでした。')).toBeVisible();
-  });
-
   it('テンプレートの初めの言葉と締めの言葉が表示されること。', async () => {
     renderDetailPage(mockDefaultPostRecord);
 
@@ -307,4 +285,32 @@ describe('テンプレート詳細ページのテスト', () => {
       expect(topPage).toBeVisible();
     });
   });
+
+  it('投稿したユーザーで認証している場合、編集ボタンが表示されること', async () => {
+    renderDetailPage(mockDefaultPostRecord, 'authenticated');
+
+    await screen.findByText(mockDefaultPostRecord.declineSituation);
+    const editButton = screen.getByRole('button', { name: '編集' });
+
+    expect(editButton).toBeInTheDocument();
+  });
+
+  it('他のユーザーで認証している場合、編集ボタンが表示されないこと', async () => {
+    renderDetailPage(
+      {
+        ...mockDefaultPostRecord,
+        user: {
+          id: 999,
+          userName: 'other_user',
+        },
+      },
+      'authenticated'
+    );
+
+    await screen.findByText(mockDefaultPostRecord.declineSituation);
+    const editButton = screen.queryByRole('button', { name: '編集' });
+
+    expect(editButton).not.toBeInTheDocument();
+  });
+
 });

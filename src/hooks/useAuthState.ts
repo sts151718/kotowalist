@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchClaims, onAuthStateChange } from '@/lib/supabase/auth';
-import { useLoaderData } from 'react-router';
+import { useRouteLoaderData } from 'react-router';
 import type { AuthLoaderData } from '@/routes/loader/authLoader';
 import { fetchUserByAuthId } from '@/lib/supabase/users';
 import { useAuthUserStore } from '@/store/useAuthUserStore';
@@ -8,7 +8,9 @@ import { useAuthUserStore } from '@/store/useAuthUserStore';
 const checkAuthenticated = (claims: AuthLoaderData['claims']) => claims?.data !== null && claims?.error === null;
 
 export const useAuthState = () => {
-  const { claims, authUser: initialAuthUser } = useLoaderData<AuthLoaderData>();
+  const authLoaderData = useRouteLoaderData<AuthLoaderData>('root');
+  const claims = authLoaderData?.claims ?? null;
+  const initialAuthUser = authLoaderData?.authUser ?? null;
   const [isAuthenticated, setIsAuthenticated] = useState(checkAuthenticated(claims));
 
   const storeAuthUser = useAuthUserStore((state) => state.user);
