@@ -115,6 +115,7 @@ export const createMainLayoutStubRoot = (
   vi.mocked(fetchUserByAuthId).mockResolvedValue(authState === 'authenticated' ? stubAuthenticatedUser : null);
 
   return {
+    id: 'root',
     Component: MainLayout,
     loader: async () => {
       const authUser = authState === 'authenticated' ? stubAuthenticatedUser : null;

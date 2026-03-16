@@ -35,7 +35,7 @@ export const TemplateDetailCard: FC<Props> = memo((props) => {
             </Heading>
 
             {isEditable && (
-              <IconButton size="xs" colorPalette="blue" borderRadius={8} onClick={onClickEditPage}>
+              <IconButton size="xs" colorPalette="blue" borderRadius={8} onClick={onClickEditPage} aria-label="編集">
                 <FiEdit />
               </IconButton>
             )}
